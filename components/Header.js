@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router';
 
-// import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
+import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
 
 const ProfileDropdown = ({ user, setDrawerOpen }) => {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext);
@@ -114,7 +114,7 @@ const Header = ({ user, setprofileDrawer, setexpenseDrawer }) => {
                 </Link>
             </div>
 
-            {/* <div className='md:hidden'>
+            <div className='md:hidden'>
                 <AddHomeWorkIcon
                     fontSize="large"
                     className="text-gray-600 cursor-pointer"
@@ -123,7 +123,7 @@ const Header = ({ user, setprofileDrawer, setexpenseDrawer }) => {
                         setexpenseDrawer(true)
                     }}
                 />
-            </div> */}
+            </div>
 
 
 
