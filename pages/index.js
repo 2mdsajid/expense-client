@@ -1,14 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { ThemeContext } from '../components/ThemeProvider'
 
 import SignUpForm from '@/components/SignupForm'
 import LoginForm from '@/components/LoginForm'
 import { useRouter } from 'next/router';
 
+import { ThemeContext } from '../components/ThemeProvider'
 
 function Index() {
   const router = useRouter();
-
+  
   const { isDark, toggleTheme, theme } = useContext(ThemeContext)
   // const [name,setName] = useState('')
   // const [email,setEmail]

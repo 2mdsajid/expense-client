@@ -5,7 +5,7 @@ import Cookies from 'js-cookie'
 import ExpenseForm from './reusable/ExpenseForm';
 import InviteMembersDialog from './reusable/InviteMembersDialog';
 
-function Sidebar4expenses({setcurrentExpenses, socket,homes, sethomeId }) {
+function Sidebar4expenses({setcurrentExpenses,setuserExpenses, socket,homes, sethomeId }) {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const [isHomeMembersVisible, setIsHomeMembersVisible] = useState(false);
@@ -109,7 +109,7 @@ function Sidebar4expenses({setcurrentExpenses, socket,homes, sethomeId }) {
                             aria-labelledby="modal-headline"
                         >
                             <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                {homes && <ExpenseForm setcurrentExpenses={setcurrentExpenses} socket={socket} handleCloseDialog={handleCloseDialog} members={homes.find((home) => home._id === selectedHomeId).invitedusers} />}
+                                {homes && <ExpenseForm setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} handleCloseDialog={handleCloseDialog} members={homes.find((home) => home._id === selectedHomeId).invitedusers} />}
                             </div>
 
 

@@ -1,8 +1,5 @@
 import { useState, useContext, ChangeEvent, useEffect } from 'react';
 
-// 
-import { useFormik, Field, Form, ErrorMessage } from 'formik';
-import * as Yup from 'yup';
 import { Alert, AlertColor } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 
@@ -17,21 +14,14 @@ import { useRouter } from 'next/router'
 
 const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
   const router = useRouter();
-
+  
   const { isDark, toggleTheme, theme } = useContext(ThemeContext)
 
   // dialogue box for messages
-  const [alertSeverity, setAlertSeverity] = useState();
-  const [alertMessage, setAlertMessage] = useState('');
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-
-  // formik initial values
-  // const initialValues: SignupFormValues = {
-  //   name: '',
-  //   email: '',
-  //   password: '',
-  //   confirmPassword: '',
-  // };
+  const [alertseverity, setalertSeverity] = useState('warning');
+  const [alertmessage, setalertMessage] = useState('Please provide an authentic email');
+  const [showalert, setshowAlert] = useState(false)
+  const [showprogress, setshowProgress] = useState(false)
 
   const [values, setValues] = useState({
     name: username || "",
@@ -39,30 +29,14 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
     password: '',
     confirmPassword: '',
     image: null,
-    homeid:userhomeid || null
+    homeid: userhomeid || null
   });
-
-
-  // YUP form validation
-  // const validationSchema = Yup.object().shape({
-  //   name: Yup.string().required('Name is required'),
-  //   email: Yup.string().email('Invalid email').required('Email is required'),
-  //   password: Yup.string().required('Password is required'),
-  //   confirmPassword: Yup.string()
-  //     .required('Confirm Password is required')
-  //     .oneOf([Yup.ref('password')], 'Passwords do not match'),
-  // });
 
   // handle submit- handling by formik
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (values.password !== values.confirmPassword) {
 
-      setAlertSeverity('error');
-      setAlertMessage("Passwords don't match!");
-      setIsAlertOpen(true);
-      return;
-    }
+    setshowProgress(true)
 
     const formData = new FormData();
     formData.append('name', values.name);
@@ -74,7 +48,6 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
     }
 
     if (userhomeid) {
-      console.log('iddddd', userhomeid)
       formData.append('homeid', values.homeid);
     }
 
@@ -85,10 +58,16 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
         method: 'POST',
         body: formData
       });
+
       const data = await response.json();
+      setshowAlert(true)
+      setalertMessage(data.message)
+      setshowProgress(false)
 
       if (data.status === 201) {
         console.log(data);
+
+        setalertSeverity('success')
         Cookies.set('logintoken', data.user.logintoken);
         Cookies.set('userId', data.user._id);
 
@@ -97,51 +76,34 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           query: { userId: data.user._id },
         }, '/dashboard', // "as" argument
         )
+      } else {
+        setalertSeverity('warning')
       }
+
+      setTimeout(() => {
+        setshowAlert(false)
+      }, 2500);
+
     } catch (error) {
       console.error(error);
+      return router.push({
+        pathname: '/error',
+      }, '/dashboard', // "as" argument
+      )
     }
 
   };
 
-  // const Formik = useFormik({
-  //   initialValues={ initialValues }
-  //   // validationSchema={ validationSchema }
-  //   onSubmit:(values)=>{
-
-  //   }
-  // })
-
-
-  // const [name, setName] = useState('');
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-  // const [confirmPassword, setConfirmPassword] = useState('');
-
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   console.log({ name, email, password, confirmPassword });
-  //   // do something with the form data, such as sending it to a server
-  // };
-
-  useEffect(() => {
-    console.log('userid in signup from cookies',Cookies.get('userId'))
-  }, [])
+  // useEffect(() => {
+  //   console.log('userid in signup from cookies', Cookies.get('userId'))
+  // }, [])
 
 
   return (
-    // <Formik
-    //   initialValues={initialValues}
-    //   validationSchema={validationSchema}
-    //   onSubmit={handleSubmit}
-    // >
-    // {({errors,values,handleChange})=>(
-      <form onSubmit={handleSubmit} className="{{theme.backgroundColor}} h-fit w-full rounded-lg">
+
+    <form onSubmit={handleSubmit} className="{{theme.backgroundColor}} h-fit w-full rounded-lg">
       <h2 className="text-2xl font-bold mb-4 text-center">Sign Up</h2>
       <div className="mb-4">
-        <label htmlFor="name" className="block font-medium text-gray-500 mb-1">
-          Name
-        </label>
         <input
           type="text"
           id="name"
@@ -149,12 +111,13 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           value={values.name}
           onChange={(event) => setValues({ ...values, name: event.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          placeholder="Name"
+          required
+          minLength="3"
         />
+        {values.name.length > 0 && <p className="text-red-500">{values.name.length < 3 && 'Name must be at least 3 characters long'}</p>}
       </div>
       <div className="mb-4">
-        <label htmlFor="email" className="block font-medium text-gray-500 mb-1">
-          Email
-        </label>
         <input
           type="email"
           id="email"
@@ -162,12 +125,13 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           value={values.email}
           onChange={(event) => setValues({ ...values, email: event.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          placeholder="Email"
+          required
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
         />
+        {values.email.length > 0 && <p className="text-red-500">{!values.email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && 'Please enter a valid email'}</p>}
       </div>
       <div className="mb-4">
-        <label htmlFor="password" className="block font-medium text-gray-500 mb-1">
-          Password
-        </label>
         <input
           type="password"
           id="password"
@@ -175,12 +139,13 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           value={values.password}
           onChange={(event) => setValues({ ...values, password: event.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          placeholder="Password"
+          required
+          minLength="8"
         />
+        {values.password.length > 0 && <p className="text-red-500">{values.password.length < 8 && 'Password must be at least 8 characters long'}</p>}
       </div>
       <div className="mb-4">
-        <label htmlFor="confirmPassword" className="block font-medium text-gray-500 mb-1">
-          Confirm Password
-        </label>
         <input
           type="password"
           id="confirmPassword"
@@ -188,11 +153,15 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           value={values.confirmPassword}
           onChange={(event) => setValues({ ...values, confirmPassword: event.target.value })}
           className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          placeholder="Confirm Password"
+          required
+          pattern={values.password}
         />
+        {values.confirmPassword.length > 0 && <p className="text-red-500">{values.confirmPassword !== values.password && 'Passwords do not match'}</p>}
       </div>
       <div className="mb-4">
         <label htmlFor="image" className="block font-medium text-gray-500 mb-1">
-          Image
+          Profile Pic
         </label>
         <input
           type="file"
@@ -222,17 +191,32 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
 
           </label>
         </div>
+        <p className="text-red-500 mt-1">
+          {values.image && !values.image.type.match("image.*") && "Only image files are allowed"}
+        </p>
       </div>
+      {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
 
-      <button
-        type="submit"
-        className={`bg-blue-500 hover:${theme.accentColor} text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline`}
-      >
-        Sign Up
-      </button>
+      <div className={`bg-blue-500 hover:${theme.accentColor} text-white font-bold flex justify-center mt-3 w-1/2 mx-auto rounded`}>
+        {showprogress ?
+          <div className='py-1'>
+
+            <CircularProgress
+              size={30}
+              sx={{ color: '#ffffff' }}
+            />
+
+          </div> :
+          <button
+            type="submit"
+            className={`w-full h-full rounded py-3 focus:outline-none focus:shadow-outline`}>
+            Sign Up
+          </button>}
+      </div>
     </form>
-    // )}
-    // </Formik>
+
+
+
   );
 };
 

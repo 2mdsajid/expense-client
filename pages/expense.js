@@ -5,13 +5,12 @@ import Header from '../components/Header'
 
 import SwipeableDrawer from '@mui/material/SwipeableDrawer'; //mui
 
+
 import Cookies from 'js-cookie'
 
 // import ExpenseForm from '../components/ExpenseForm';
 import Sidebar4expenses from '../components/Sidebar4expenses';
-
-import { Button, Dialog, Transition } from '@headlessui/react';
-import { PlusIcon } from '@heroicons/react/solid';
+import Sidebar from '../components/Sidebar';
 
 import ExpenseTable from '../components/reusable/ExpenseTable'
 
@@ -21,10 +20,13 @@ import io from 'socket.io-client';
 
 function Expense() {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext)
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [profiledrawer, setprofileDrawer] = useState(false);
+    const [expensedrawer, setexpenseDrawer] = useState(false);
     const [userProfile, setUserProfile] = useState();
 
     const [currentexpenses, setcurrentExpenses] = useState([])
+    const [userexpenses, setuserExpenses] = useState([]) //all expenses after fetch
+
 
     const [showDialog, setShowDialog] = useState(false);
 
@@ -48,7 +50,7 @@ function Expense() {
     }
 
     // toggle the sidebar in small screens
-    const toggleDrawer = (open) => (event) => {
+    const toggleprofileDrawer = (open) => (event) => {
         // ignore events from input, textarea and buttons inside the drawer
         if (
             event &&
@@ -57,7 +59,20 @@ function Expense() {
         ) {
             return;
         }
-        setDrawerOpen(open);
+        setprofileDrawer(open);
+    };
+
+    // toggle the sidebar in small screens
+    const toggleexpenseDrawer = (open) => (event) => {
+        // ignore events from input, textarea and buttons inside the drawer
+        if (
+            event &&
+            event.type === 'keydown' &&
+            ((event).key === 'Tab' || (event).key === 'Shift')
+        ) {
+            return;
+        }
+        setexpenseDrawer(open);
     };
 
     // fetch the home expenses
@@ -140,27 +155,28 @@ function Expense() {
 
     return (
         <div className={`min-h-screen w-screen ${theme.backgroundColor} ${theme.primaryTextColor}`}>
-            <Header user={userProfile} setDrawerOpen={setDrawerOpen} />
+            <Header user={userProfile} setprofileDrawer={setprofileDrawer} setexpenseDrawer={setexpenseDrawer} />
             <div id='othercontents' className="flex flex-wrap pt-10">
 
-                {/* SIDE BAR WITH DRAWER */}
+                {/* SIDE BAR WITH PROFILE */}
                 <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer
-                            anchor="left"
-                            open={drawerOpen}
-                            onClose={toggleDrawer(false)}
-                            onOpen={toggleDrawer(true)}
+                            anchor="right"
+                            open={profiledrawer}
+                            onClose={toggleprofileDrawer(false)}
+                            onOpen={toggleprofileDrawer(true)}
                             className="block md:hidden">
-                            {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
-                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} socket={socket} homes={userProfile.homes}  sethomeId={sethomeId} />}
+                            {userProfile && <Sidebar userProfile={userProfile} />}
                         </SwipeableDrawer>
                     </div>
+
                     <div>
-                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
-                        {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
+                        {userProfile && <Sidebar userProfile={userProfile} />}
                     </div>
+
                 </div>
 
                 {/* REST OMPONENTS */}
@@ -171,7 +187,25 @@ function Expense() {
 
                 </div>
 
-
+                {/* SIDEBAR FOR EXPENSE */}
+                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                    <div className="md:hidden invisible">
+                        {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
+                        <SwipeableDrawer
+                            anchor="left"
+                            open={expensedrawer}
+                            onClose={toggleexpenseDrawer(false)}
+                            onOpen={toggleexpenseDrawer(true)}
+                            className="block md:hidden">
+                            {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
+                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        </SwipeableDrawer>
+                    </div>
+                    <div>
+                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
+                    </div>
+                </div>
 
             </div>
         </div>

@@ -5,7 +5,7 @@ import { BACKEND } from '../constant';
 
 import io from 'socket.io-client';
 
-const ExpenseForm = ({ setcurrentExpenses,socket, handleCloseDialog, members }) => {
+const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDialog, members }) => {
 
   const [item, setItem] = useState('');
   const [price, setPrice] = useState('');
@@ -51,15 +51,19 @@ const ExpenseForm = ({ setcurrentExpenses,socket, handleCloseDialog, members }) 
       expense.sharing = { user: sharedBy, share: Number(share) }
     }
 
-    console.log(expense)
+    console.log('to add ex[ense',expense)
 
     socket.emit('addexpense', expense, homeid);
 
     socket.on('addedexpense', (data) => {
-      // console.log('new expense from socket', data)
-      sessionStorage.setItem(`homeexpenses-${data.home.home}`, JSON.stringify(data.home));
+      console.log('new expense from socket', data)
+      sessionStorage.setItem(`homeexpenses-${data.homeid}`, JSON.stringify(data.home));
       sessionStorage.setItem('userexpenses', JSON.stringify(data.user));
        setcurrentExpenses(data.home)
+       setuserExpenses(data.user)
+       
+       console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ data.user:", data.user)
+       console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ setuserExpenses:", setuserExpenses)
     })
 
     // try {

@@ -1,14 +1,43 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { BACKEND } from '../constant'
 
+import CreateForm from './CreateForm';
+import JoinForm from './JoinForm';
 
-const DialogBox = ({ onClose, onJoinHome }) => {
+import { Alert, AlertColor } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 
-    const [showform, setshowForm] = useState(false)
+import { ThemeContext } from '../ThemeProvider';
+
+import { useRouter } from 'next/router'
+
+
+
+const CreateHomeDialog = ({ setIsDialogOpen }) => {
+    const router = useRouter();
+
+    const { isDark, toggleTheme, theme } = useContext(ThemeContext)
+
+    // dialogue box for messages
+    const [alertseverity, setalertSeverity] = useState('warning');
+    const [alertmessage, setalertMessage] = useState('Please provide an authentic email');
+    const [showalert, setshowAlert] = useState(false)
+    const [showprogress, setshowProgress] = useState(false)
+
+    const [showform, setshowForm] = useState(true)
+    const [showcreateform, setshowcreateForm] = useState(false)
+    const [showjoinform, setshowjoinForm] = useState(false)
 
     const [homeName, setHomeName] = useState("");
     const [members, setMembers] = useState([{ name: "", email: "" }]);
+
+
+    const [joinhomeid, setjoinhomeId] = useState('')
+
+    const dialogClose = () => {
+        setIsDialogOpen(false)
+    }
 
     const addMember = () => {
         setMembers([...members, { name: "", email: "" }]);
@@ -19,10 +48,17 @@ const DialogBox = ({ onClose, onJoinHome }) => {
         setMembers(updatedMembers);
     };
 
+    const onJoinHome = () => {
+        setshowjoinForm(true);
+        setshowcreateForm(false);
+        setshowForm(false);
+    };
 
     const createHome = () => {
-        setshowForm(true)
-    }
+        setshowcreateForm(true);
+        setshowjoinForm(false);
+        setshowForm(false);
+    };
 
     const handleMemberChange = (event, index) => {
         const { name, value } = event.target;
@@ -31,12 +67,95 @@ const DialogBox = ({ onClose, onJoinHome }) => {
         setMembers(updatedMembers);
     };
 
-    const handleSubmit = async (event) => {
+    // to check the format of homd-e id
+    function validateFormat(str) {
+        const regex = /^[0-9a-fA-F]{24}$/;
+        return regex.test(str);
+    }
+
+
+    const onSubmitJoin = async (e) => {
+        e.preventDefault()
+
+        setshowProgress(true)
+
+        const userid = Cookies.get('userId')
+        if (!userid) {
+            return console.log('no user id found')
+        }
+
+        console.log('joinhomeid', joinhomeid)
+
+        const isvalid = validateFormat(joinhomeid)
+        if (!isvalid) {
+            setalertMessage('Please input a valid home-id')
+            setshowAlert(true)
+            setshowProgress(false)
+            setalertSeverity('warning')
+
+            setTimeout(() => {
+                return setshowAlert(false)
+            }, 2500);
+
+            return
+        }
+
+        try {
+            const response = await fetch(BACKEND + '/joinhomeviaid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    homeid: joinhomeid,
+                    userid: userid
+                })
+            });
+
+            const data = await response.json();
+            // console.log(data);
+
+            setshowAlert(true)
+            setalertMessage(data.message)
+            setshowProgress(false)
+
+            if (data.status === 201) {
+                console.log('data after join', data);
+
+                setalertSeverity('success')
+                localStorage.setItem('userprofile', JSON.stringify(data.user));
+
+                // window.location.reload();
+
+            } else {
+                setalertSeverity('warning')
+            }
+
+            setTimeout(() => {
+                setshowAlert(false)
+            }, 2500);
+
+        } catch (error) {
+            console.error(error);
+            return router.push({
+                pathname: '/error',
+            }, '/dashboard', // "as" argument
+            )
+        }
+
+    }
+
+
+    const onSubmitCreate = async (event) => {
         event.preventDefault();
+
+        setshowProgress(true)
 
         const userId = Cookies.get('userId');
         const data = { homeName, members };
         console.log('members', userId);
+
+         console.log('create home data', data)
 
         try {
             const res = await fetch(BACKEND + '/createhome', {
@@ -52,51 +171,124 @@ const DialogBox = ({ onClose, onJoinHome }) => {
             });
 
             const data = await res.json();
-            console.log(data);
+            // console.log(data);
 
-            // Get the existing userProfile from localStorage
-            const userProfile = JSON.parse(localStorage.getItem('userProfile'));
-
-            // Update the homes property of the userProfile
-            userProfile.homes.push(data.home);
-
-            // Set the updated userProfile back to localStorage
-            localStorage.setItem('userProfile', JSON.stringify(userProfile));
+            setshowAlert(true)
+            setalertMessage(data.message)
+            setshowProgress(false)
 
 
-            setHomeName('')
-            setMembers([{ name: "", email: "" }])
-        } catch (err) {
-            console.error(err);
+            if (data.status === 201) {
+                console.log('data after create', data);
+                setalertSeverity('success')
+                // const userProfile = JSON.parse(localStorage.getItem('userProfile'));
+                // userProfile.homes.push(data.home);
+                localStorage.setItem('userprofile', JSON.stringify(data.updateduser));
+
+                setHomeName('')
+                setMembers([{ name: "", email: "" }])
+                // console.log("🚀 ~ file: CreateHomeDialog.js:190 ~ onSubmitCreate ~ ")
+
+                window.location.reload();
+
+                // console.log("🚀 ~ file: CreateHomeDialog.js:193 ~ onSubmitCreate ~ reload:")
+                
+
+            } else {
+                setalertSeverity('warning')
+            }
+
+            setTimeout(() => {
+                setshowAlert(false)
+            }, 2500);
+
+        } catch (error) {
+            console.error(error);
+            return router.push({
+                pathname: '/error',
+            }, '/dashboard', // "as" argument
+            )
         }
     };
+
+    useEffect(() => {
+        console.log('create home dialog open')
+    }, [])
 
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-gray-700">
             <div className="relative bg-white rounded-lg w-4/5 sm:w-1/3 md:w-1/4 min-h-auto max-h-[80vh] overflow-y-scroll">
+
+                {/* <p>a dilamlwuiesgnzb ,jhemn</p> */}
                 <button
                     className="absolute top-2 right-2 text-gray-400 hover:text-gray-600"
-                    onClick={onClose}
-                >
+                    onClick={dialogClose}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 20 20"
                         fill="currentColor"
-                        className="w-6 h-6"
-                    >
+                        className="w-6 h-6">
                         <path
                             fillRule="evenodd"
                             d="M10 0a10 10 0 100 20 10 10 0 000-20zm2.93 13.07a1 1 0 11-1.41 1.41L10 11.41l-1.52 1.52a1 1 0 11-1.41-1.41L8.59 10 7.07 8.48a1 1 0 111.41-1.41L10 8.59l1.52-1.52a1 1 0 111.41 1.41L11.41 10l1.52 1.52z"
-                            clipRule="evenodd"
-                        />
+                            clipRule="evenodd" />
                     </svg>
                 </button>
 
-                {showform ?
+                {showjoinform && <div>
+                    {/* <JoinForm onSubmitJoin={onSubmitJoin} setjoinhomeId={setjoinhomeId} /> */}
+                    <div className="bg-white rounded-lg p-4">
+                        <form onSubmit={onSubmitJoin}>
+                            <div className="flex flex-col mb-4">
+                                <label htmlFor="homeid" className="text-gray-700 font-medium mb-2">
+                                    Home ID
+                                </label>
+                                <input
+                                    type="text"
+                                    id="homeid"
+                                    name="homeid"
+                                    placeholder="Enter home ID"
+                                    onChange={(e) => setjoinhomeId(e.currentTarget.value)}
+                                    className="py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
+                                />
+                            </div>
+
+                            {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
+
+                            <div className={` text-white bg-gray-800 hover:bg-gray-700 font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer`}>
+                                {showprogress ?
+                                    <div className='py-1'>
+
+                                        <CircularProgress
+                                            size={30}
+                                            sx={{ color: '#ffffff' }}
+                                        />
+
+                                    </div> :
+                                    <button
+                                        type="submit"
+                                        className={`w-full h-full rounded py-3 focus:outline-none focus:shadow-outline`}>
+                                        Join
+                                    </button>}
+                            </div>
+                            {/* <button
+                                type="submit"
+                                className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-700"
+                            >
+                                Join
+                            </button> */}
+                        </form>
+                    </div>
+                </div>}
+
+
+                {showcreateform && <div>
+                    {/* <CreateForm onSubmitCreate={onSubmitCreate} setHomeName={setHomeName} addMember={addMember} removeMember={removeMember} handleMemberChange={handleMemberChange} /> */}
                     <div className="bg-white rounded-lg p-4">
                         <h2 className="text-lg font-bold mb-4">Create Home</h2>
-                        <form onSubmit={handleSubmit}>
+
+                        <form onSubmit={onSubmitCreate}>
                             <label className="block mb-2 font-bold text-sm text-gray-800" htmlFor="homeName">
                                 Home Name
                             </label>
@@ -115,8 +307,7 @@ const DialogBox = ({ onClose, onJoinHome }) => {
                                         Member {index + 1}
                                         <button
                                             className="ml-2 text-red-500"
-                                            onClick={() => removeMember(index)}
-                                        >
+                                            onClick={() => removeMember(index)}>
                                             x
                                         </button>
                                     </p>
@@ -140,48 +331,59 @@ const DialogBox = ({ onClose, onJoinHome }) => {
                                         onChange={(event) => handleMemberChange(event, index)}
                                         className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
                                         required
+                                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                                     />
+                                    {member.email.length > 0 && <p className='text-red-600'>{!member.email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && 'Please enter a valid email'}</p>}
                                 </div>
                             ))}
+                            {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
 
                             <div className="flex justify-end mt-4">
                                 <button
                                     type="button"
                                     className="px-4 py-2 text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 mr-2"
-                                    onClick={addMember}
-                                >
+                                    onClick={addMember}>
                                     Add Member
                                 </button>
-                                <button
-                                    type="submit"
-                                    className="px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                                >
-                                    Create Home
-                                </button>
+
+
+                                <div className={` text-white bg-gray-800 hover:bg-gray-700 font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer`}>
+                                    {showprogress ?
+                                        <div className='py-1'>
+                                            <CircularProgress
+                                                size={30}
+                                                sx={{ color: '#ffffff' }} />
+                                        </div> :
+                                        <button
+                                            type="submit"
+                                            className={`w-full h-full rounded py-3 focus:outline-none focus:shadow-outline`}>
+                                            Create
+                                        </button>}
+                                </div>
                             </div>
                         </form>
                     </div>
-                    : <div className="p-4">
-                        <h2 className="text-lg font-bold mb-4">Create or Join Home</h2>
-                        <div className="flex items-center justify-between">
-                            <button
-                                className="px-4 py-2 mr-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                                onClick={createHome}
-                            >
-                                Create Home
-                            </button>
-                            <button
-                                className="px-4 py-2 text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
-                                onClick={onJoinHome}
-                            >
-                                Join Home
-                            </button>
-                        </div>
-                    </div>}
+                </div>}
+
+                {showform && <div className="p-4">
+                    <h2 className="text-lg font-bold mb-4">Create or Join Home</h2>
+                    <div className="flex items-center justify-between">
+                        <button
+                            className="px-4 py-2 mr-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
+                            onClick={createHome}>
+                            Create Home
+                        </button>
+                        <button
+                            className="px-4 py-2 text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
+                            onClick={onJoinHome}>
+                            Join Home
+                        </button>
+                    </div>
+                </div>}
 
             </div>
         </div>
     );
 };
 
-export default DialogBox;
+export default CreateHomeDialog;

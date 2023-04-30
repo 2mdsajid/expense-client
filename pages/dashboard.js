@@ -30,6 +30,7 @@ import { expenses_data } from '@/components/constant';
 import Sidebar from '../components/Sidebar'
 import ExpenseTable from '../components/reusable/ExpenseTable'
 import ExpenseDialog from '../components/reusable/ExpenseDialog'
+import Sidebar4expenses from '../components/Sidebar4expenses';
 
 
 
@@ -39,9 +40,13 @@ import ExpenseDialog from '../components/reusable/ExpenseDialog'
 
 
 function Dashboard() {
+
+
+
+
     const router = useRouter();
 
-    const [socket, setSocket] = useState()
+    // const [socket, setSocket] = useState()
 
 
     const { isDark, toggleTheme, theme } = useContext(ThemeContext)
@@ -52,10 +57,20 @@ function Dashboard() {
     const [userexpenses, setuserExpenses] = useState([]) //all expenses after fetch
 
 
+
     const [drawerOpen, setDrawerOpen] = useState(false);
 
 
     const [showSidebar, setShowSidebar] = useState(true); //sidebar toggle
+
+    const [currentexpenses, setcurrentExpenses] = useState([])
+    
+
+    const [homeid, sethomeId] = useState()
+
+    const socket = io("http://localhost:4009")
+    // to join the current room
+    socket.emit('join-expense', homeid);
 
     // toggle the sidebar in small screens
     const toggleDrawer = (open) => (event) => {
@@ -131,8 +146,9 @@ function Dashboard() {
             const data = await res.json();
             setUserProfile(data.user);
             console.log('userprofile loaded..........', data.user)
-            localStorage.setItem('userprofile', JSON.stringify(data.user)); // Store the user profile in local storage
+            localStorage.setItem('userprofile', JSON.stringify(data.user));
             Cookies.set('homeid', data.user.homes[0]._id)
+            sethomeId(data.user.homes[0]._id)
             console.log('homeid', data.user.homes[0]._id)
             return null;
 
@@ -191,16 +207,16 @@ function Dashboard() {
 
 
     // seting the websocket
-    useEffect(() => {
-        const socket = io("http://localhost:4009", {
-            withCredentials: true,
-            extraHeaders: {
-                "my-custom-header": "abcd"
-            }
-        });
+    // useEffect(() => {
+    //     const socket = io("http://localhost:4009", {
+    //         withCredentials: true,
+    //         extraHeaders: {
+    //             "my-custom-header": "abcd"
+    //         }
+    //     });
 
-        setSocket(socket)
-    }, [])
+    //     setSocket(socket)
+    // }, [])
 
 
     return (
@@ -214,23 +230,23 @@ function Dashboard() {
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer
-                            anchor="left"
+                            anchor="right"
                             open={drawerOpen}
                             onClose={toggleDrawer(false)}
                             onOpen={toggleDrawer(true)}
                             className="block md:hidden">
-                            {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={true} />}
+                            {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} />}
                         </SwipeableDrawer>
                     </div>
 
                     <div>
-                        {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={true} />}
+                        {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} />}
                     </div>
 
                 </div>
 
                 {/* REMAINING COMPONENT */}
-                <div className='w-[90%] md:w-[70%] xl:w-[75%] mx-auto'>
+                <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
                     {/* Recent expenses section */}
 
                     <div>
@@ -257,6 +273,26 @@ function Dashboard() {
                         </div>
                     </div>
 
+                </div>
+
+                {/* SIDE BAR FOR HOMES */}
+                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                    <div className="md:hidden invisible">
+                        {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
+                        <SwipeableDrawer
+                            anchor="left"
+                            open={drawerOpen}
+                            onClose={toggleDrawer(false)}
+                            onOpen={toggleDrawer(true)}
+                            className="block md:hidden">
+                            {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
+                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        </SwipeableDrawer>
+                    </div>
+                    <div>
+                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
+                    </div>
                 </div>
 
             </div>

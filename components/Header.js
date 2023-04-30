@@ -4,35 +4,9 @@ import Link from 'next/link';
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/router';
 
-interface User {
-    _id: string;
-    avatar: string;
-    email: string;
-    homes: Home[];
-    name: string;
-    password: string;
-    status: string;
-    verification: {
-        expiresAt: string;
-        isVerified: boolean;
-    };
-}
+// import AddHomeWorkIcon from '@mui/icons-material/AddHomeWork';
 
-interface Home {
-    _id: string;
-    name: string;
-}
-
-interface OnlyUser {
-    user?: User;
-}
-
-interface Props {
-    user?: User;
-    setDrawerOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-const ProfileDropdown: React.FC<Props> = ({ user, setDrawerOpen }) => {
+const ProfileDropdown = ({ user, setDrawerOpen }) => {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -112,12 +86,22 @@ const ProfileDropdown: React.FC<Props> = ({ user, setDrawerOpen }) => {
     );
 };
 
-const Header: React.FC<Props> = ({ user, setDrawerOpen }) => {
+const Header = ({ user, setprofileDrawer, setexpenseDrawer }) => {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
     return (
-        <header className={`flex items-center justify-between ${theme.backgroundColor} px-2`}>
-            <div></div>
+        <header className={`flex items-center justify-between md:justify-center ${theme.backgroundColor} px-2`}>
+            <div className='md:hidden'>
+                <img
+                    src={user?.avatar}
+                    alt="Avatar"
+                    className="w-8 h-8 rounded-full cursor-pointer"
+                    onClick={() => {
+                        // handleDropdownClick()
+                        setprofileDrawer(true)
+                    }}
+                />
+            </div>
             <div className="flex items-center space-x-4">
                 <Link href="/dashboard" className={`${theme.primaryTextColor} hover:underline`}>
                     Dashboard
@@ -129,9 +113,23 @@ const Header: React.FC<Props> = ({ user, setDrawerOpen }) => {
                     Expenses
                 </Link>
             </div>
-            <div className="flex items-center space-x-4">
+
+            {/* <div className='md:hidden'>
+                <AddHomeWorkIcon
+                    fontSize="large"
+                    className="text-gray-600 cursor-pointer"
+                    onClick={() => {
+                        // handleDropdownClick()
+                        setexpenseDrawer(true)
+                    }}
+                />
+            </div> */}
+
+
+
+            {/* <div className="flex items-center space-x-4">
                 <ProfileDropdown user={user} setDrawerOpen={setDrawerOpen} />
-            </div>
+            </div> */}
         </header>
     );
 };
