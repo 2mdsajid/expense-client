@@ -35,7 +35,7 @@ function Expense() {
     const [homeid, sethomeId] = useState(Cookies.get('homeid'))
 
     // socket
-    const socket = io("http://localhost:4009")
+    const socket = io(BACKEND)
 
     // to join the current room
     socket.emit('join-expense', homeid);

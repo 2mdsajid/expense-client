@@ -1,4 +1,5 @@
-export const BACKEND = 'http://localhost:4009'
+export const BACKEND = 'https://expense-server.adaptable.app'
+
 
 export const expenses_data = [
   {

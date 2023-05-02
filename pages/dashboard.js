@@ -70,7 +70,7 @@ function Dashboard() {
 
     const [homeid, sethomeId] = useState()
 
-    const socket = io("http://localhost:4009")
+    const socket = io(BACKEND)
     // to join the current room
     socket.emit('join-expense', homeid);
 

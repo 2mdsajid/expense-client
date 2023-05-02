@@ -21,7 +21,7 @@ const ExpenseDialog = ({ expense, setOpen }) => {
     //     socket.emit('join-room', expense._id);
     // }
 
-    const socket = io("http://localhost:4009")
+    const socket = io(BACKEND)
 
     // to join the current room
     socket.emit('join-room', expense._id);
