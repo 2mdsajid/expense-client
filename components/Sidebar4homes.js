@@ -24,7 +24,8 @@ const Sidebar4homes = ({ homes }) => {
     };
 
     return (
-        <div>
+        <>
+        {homes.length >0 ? <div>
             <h2>Homes List</h2>
             <ul>
                 {homes.map((home) => (
@@ -65,7 +66,10 @@ const Sidebar4homes = ({ homes }) => {
                 </div>
             )}
             {isInviteMembersDialogOpen && <InviteMembersDialog onClose={() => setIsInviteMembersDialogOpen(false)} />}
-        </div>
+        </div> : <div>
+            No home available! please start by adding home
+        </div> }
+        </>
     );
 };
 

@@ -7,6 +7,11 @@ import io from 'socket.io-client';
 
 import { ThemeContext } from '../ThemeProvider';
 
+import { Alert, AlertColor } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+
+
+
 const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseDialog, members }) => {
   const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
@@ -17,12 +22,21 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
   const [sharedBy, setSharedBy] = useState('');
   const [share, setShare] = useState('');
 
+  const [alertseverity, setalertSeverity] = useState('warning');
+  const [alertmessage, setalertMessage] = useState('Please provide an authentic email');
+  const [showalert, setshowAlert] = useState(false)
+  const [showprogress, setshowProgress] = useState(false)
+
+
+
   // socket
   // const socket = io("http://localhost:4009")
 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    setshowProgress(true)
 
     // validate form inputs
     if (!item || !price || !category) {
@@ -59,11 +73,17 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
     socket.emit('addexpense', expense, homeid);
 
     socket.on('addedexpense', (data) => {
+      setshowProgress(false)
       console.log('new expense from socket', data)
       sessionStorage.setItem(`homeexpenses-${data.homeid}`, JSON.stringify(data.home));
       sessionStorage.setItem('userexpenses', JSON.stringify(data.user));
       setcurrentExpenses(data.home)
       setuserExpenses(data.user)
+
+      
+      setshowAlert(true)
+      setalertMessage('New Expense added successfully')
+      setalertSeverity('success')
 
       setItem('');
       setPrice('');
@@ -71,9 +91,6 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
       setCategory('misc');
       setSharedBy('');
       setShare('');
-
-      // console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ data.user:", data.user)
-      // console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ setuserExpenses:", setuserExpenses)
     })
 
     // try {
@@ -109,11 +126,12 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
     <form onSubmit={handleSubmit} className={`${theme.boxbg} max-w-sm mx-auto mt-8`}>
       <div className="mb-4">
         <label htmlFor="item" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
-          Item
+          Item <span className='text-red-700'>*</span>
         </label>
         <input
           type="text"
           id="item"
+          required
           className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={item}
           onChange={(e) => setItem(e.target.value)}
@@ -121,11 +139,12 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
       </div>
       <div className="mb-4">
         <label htmlFor="price" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
-          Price
+          Price <span className='text-red-700'>*</span>
         </label>
         <input
           type="number"
           id="price"
+          required
           className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
@@ -144,10 +163,11 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
       </div>
       <div className="mb-4">
         <label htmlFor="category" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
-          Category
+          Category <span className='text-red-700'>*</span>
         </label>
         <select
           id="category"
+          required
           className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={category}
           onChange={(e) => setCategory(e.target.value)}
@@ -189,13 +209,25 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
         />
       </div>
 
-      <div className="text-center">
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-6 transition-colors duration-300 ease-in-out">
-          Add Expense
-        </button>
+      {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
+      <div className={`bg-blue-500 hover:${theme.accentColor} text-white font-bold flex justify-center mt-3 w-1/2 mx-auto rounded`}>
+        {showprogress ?
+          <div className='py-1'>
+
+            <CircularProgress
+              size={30}
+              sx={{ color: '#ffffff' }}
+            />
+
+          </div> :
+          <button
+            type="submit"
+            className={`w-full h-full rounded py-3 focus:outline-none focus:shadow-outline`}>
+            Add Expense
+          </button>}
       </div>
+
+
 
 
     </form>

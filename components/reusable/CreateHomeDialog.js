@@ -123,7 +123,7 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                 console.log('data after join', data);
 
                 setalertSeverity('success')
-                localStorage.setItem('userprofile', JSON.stringify(data.user));
+                sessionStorage.setItem('userprofile', JSON.stringify(data.user));
 
                 // window.location.reload();
 
@@ -183,7 +183,7 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                 setalertSeverity('success')
                 // const userProfile = JSON.parse(localStorage.getItem('userProfile'));
                 // userProfile.homes.push(data.home);
-                localStorage.setItem('userprofile', JSON.stringify(data.updateduser));
+                sessionStorage.setItem('userprofile', JSON.stringify(data.updateduser));
 
                 setHomeName('')
                 setMembers([{ name: "", email: "" }])

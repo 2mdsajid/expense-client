@@ -53,7 +53,7 @@ function Dashboard() {
     const [userId, setUserId] = useState() //userid after fetching from cookies-url
 
 
-    const [userProfile, setUserProfile] = useState(); //user profile after fetch
+    const [userProfile, setUserProfile] = useState({}); //user profile after fetch
     const [userexpenses, setuserExpenses] = useState([]) //all expenses after fetch
 
 
@@ -61,7 +61,7 @@ function Dashboard() {
     const [profiledrawer, setprofileDrawer] = useState(false);
     const [expensedrawer, setexpenseDrawer] = useState(false);
 
-    const [currentpage,setcurrentPage] = useState('dashboard')
+    const [currentpage, setcurrentPage] = useState('dashboard')
 
     const [showSidebar, setShowSidebar] = useState(true); //sidebar toggle
 
@@ -147,6 +147,7 @@ function Dashboard() {
 
     // fetch user profile 
     const fetchUserProfile = async (userId) => {
+        console.log('fetching user profile')
         try {
             const res = await fetch(`${BACKEND}/getuserprofile`, {
                 method: 'POST',
@@ -159,10 +160,13 @@ function Dashboard() {
             const data = await res.json();
             setUserProfile(data.user);
             console.log('userprofile loaded..........', data.user)
-            localStorage.setItem('userprofile', JSON.stringify(data.user));
-            Cookies.set('homeid', data.user.homes[0]._id)
-            sethomeId(data.user.homes[0]._id)
-            console.log('homeid', data.user.homes[0]._id)
+            sessionStorage.setItem('userprofile', JSON.stringify(data.user));
+
+            if(data.user.homes.length>0){
+                Cookies.set('homeid', data.user.homes[0]._id)
+                sethomeId(data.user.homes[0]._id)
+                console.log('homeid', data.user.homes[0]._id)
+            }
             return null;
 
         } catch (err) {
@@ -198,7 +202,7 @@ function Dashboard() {
     // fetching the user profile
     useEffect(() => {
         if (userId) {
-            const userprofile = JSON.parse(localStorage.getItem('userprofile'));
+            const userprofile = JSON.parse(sessionStorage.getItem('userprofile'));
             if (userprofile && userprofile._id === userId) {
                 console.log('from local storage', userprofile);
                 setUserProfile(userprofile)
@@ -206,7 +210,9 @@ function Dashboard() {
                 fetchUserProfile(userId);
             }
 
-            fetchhomeExpenses(Cookies.get('homeid'))
+            if (Cookies.get('homeid')) {
+                fetchhomeExpenses(Cookies.get('homeid'))
+            }
 
             const cachedExpenses = JSON.parse(sessionStorage.getItem('userexpenses'));
             if (cachedExpenses) {
@@ -235,10 +241,10 @@ function Dashboard() {
     return (
         <div className={`min-h-screen w-screen ${theme.backgroundColor} ${theme.primaryTextColor}`}>
             <Header user={userProfile} setprofileDrawer={setprofileDrawer} setexpenseDrawer={setexpenseDrawer} currentpage={currentpage} />
-            <div className="flex flex-wrap pt-10">
+            <div className="flex pt-10">
 
                 {/* SIDE BAR WITH DRAWER */}
-                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%]  ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
 
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
@@ -259,7 +265,7 @@ function Dashboard() {
                 </div>
 
                 {/* REMAINING COMPONENT */}
-                {userexpenses ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
+                {userexpenses.length>0 ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
                     {/* Recent expenses section */}
 
                     <div>
@@ -286,12 +292,12 @@ function Dashboard() {
                         </div> */}
                     </div>
 
-                </div> : <div>
-                    <p>Please click home icon and add expenses !</p>
+                </div> : <div className='w-[80%] md:w-[40%] xl:w-[50%] mx-auto'>
+                    <p className='p-1 text-center font-semibold text-lg '>{(userProfile.homes && userProfile.homes.length) > 0  ? 'Please add expenses! you do nat have any expenses to show' : 'Please add a new home from profile section to start adding your expenses !'}</p>
                 </div>}
 
                 {/* SIDE BAR FOR HOMES */}
-                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
+                <div className={`hidden mb-10 md:block  md:w-[25%] xl:w-[20%]  ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
 
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}

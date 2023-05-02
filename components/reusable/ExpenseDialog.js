@@ -147,10 +147,10 @@ const ExpenseDialog = ({ expense, setOpen }) => {
         <div className="fixed z-10 inset-0 overflow-y-auto pt-10">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
 
-                <div onClick={() => setOpen(false)} className={`absolute w-[100vw] h-[100vh] inset-0 ${theme.boxbg} opacity-800`}></div>
+                <div onClick={() => setOpen(false)} className={`absolute w-[100vw] h-[100vh] inset-0 ${theme.backgroundColor} opacity-800`}></div>
 
                 {/* <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span> */}
-                <div className={`inline-block align-bottom ${theme.boxbg} ${theme.primaryTextColor} rounded-lg text-left overflow-scroll shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full px-5`}>
+                <div className={`inline-block align-bottom ${theme.boxbg} ${theme.primaryTextColor} rounded-lg text-left overflow-scroll shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full px-5 py-3`}>
 
                     <div className="sm:flex">
 

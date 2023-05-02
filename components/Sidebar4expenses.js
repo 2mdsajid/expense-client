@@ -43,16 +43,24 @@ function Sidebar4expenses({ setcurrentExpenses, setuserExpenses, socket, homes, 
 
     // SETTING A DEFAULT HOME
     useEffect(() => {
-        if (!selectedHomeId) {
-            handleHomeSelection(homes[0]._id)
+
+        if (homes) {
+            const homeid = Cookies.get('homeid')
+            if (homeid) {
+                return setSelectedHomeId(homeid)
+            }
+
+            if (!selectedHomeId && homes.length > 0) {
+                handleHomeSelection(homes[0]._id)
+            }
         }
-    }, [])
+    }, [homes])
 
 
     return (
-        <div className={`w-full h-full ${theme.boxbg}`}>
+        <div className={`${theme.boxbg} w-full h-full`}>
 
-            <div className={`${theme.boxbg} p-4`}>
+            {(homes && homes.length > 0) ? <div className={`${theme.boxbg} p-4`}>
                 <h2 className={`${theme.primaryTextColor} font-bold text-2xl mb-4`}>Homes List</h2>
 
                 <div className="flex flex-col">
@@ -60,17 +68,16 @@ function Sidebar4expenses({ setcurrentExpenses, setuserExpenses, socket, homes, 
                         <button
                             key={home.id}
                             onClick={() => handleHomeSelection(home._id)}
-                            className={`w-fit rounded-md py-2 px-4 flex items-center ${selectedHomeId === home._id && 'font-bold'} ${theme.primaryTextColor}`}
-                        >
+                            className={`w-fit rounded-md py-2 px-4 flex items-center ${selectedHomeId === home._id && 'font-bold'} ${theme.primaryTextColor}`}>
                             {selectedHomeId === home._id && <span className={`${theme.primaryTextColor}`}>&#9658;</span>}
                             <span className="ml-5">{home.name}</span>
                         </button>
                     ))}
                 </div>
 
-
-                {selectedHomeId && (
-                    <div className="mt-4 border-t">
+   
+                {selectedHomeId && ( 
+                    <div className="mt-4 border-t ">
                         <span className={`${theme.secondaryTextColor} block mb-2`}>
                             created by - {homes.find((home) => home._id === selectedHomeId).owner.name}
                         </span>
@@ -84,21 +91,23 @@ function Sidebar4expenses({ setcurrentExpenses, setuserExpenses, socket, homes, 
                                     </li>
                                 ))}
                         </ul>
-                        <button
-                            className={`${theme.primaryBtn} hover:${theme.hoverBtn} text-white font-bold py-2 px-4 rounded`}
-                            onClick={handleOpenDialog}
-                        >
-                            Add Expense
-                        </button>
-                        <button
-                            onClick={handleInviteMembersClick}
-                            className={`${theme.primaryBtn} hover:${theme.hoverBtn} text-white font-bold py-2 px-4 rounded ml-2`}
-                        >
-                            Invite Member
-                        </button>
+                        <div className='flex flex-wrap space-x-1 space-y-1 '>
+                            <button
+                                className={`${theme.primaryBtn} hover:${theme.hoverBtn} text-white font-bold py-2 px-4 rounded`}
+                                onClick={handleOpenDialog}>
+                                Add Expense
+                            </button>
+                            <button
+                                onClick={handleInviteMembersClick}
+                                className={`${theme.primaryBtn} hover:${theme.hoverBtn} text-white font-bold py-2 px-4 rounded ml-2`}>
+                                Invite Member
+                            </button>
+                        </div>
                     </div>
                 )}
-            </div>
+            </div> : <p className={` ${theme.primaryTextColor} p-4 text-center font-semibold text-lg`}>
+                Please add a home to add expenses!
+            </p>}
 
             {isDialogOpen && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">

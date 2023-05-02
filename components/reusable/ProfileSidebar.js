@@ -43,7 +43,7 @@ function ProfileSidebar({ userprofile }) {
 
     return (
 
-        <div className={`${theme.boxbg} p-4 rounded-md shadow-md h-full`}>
+        <div className={`${theme.boxbg} p-4 h-full `}>
             <div className="flex justify-between items-center mb-5">
                 <h2 className={`${theme.primaryTextColor} text-2xl py-3 font-bold`}>Profile</h2>
                 <button
@@ -55,16 +55,16 @@ function ProfileSidebar({ userprofile }) {
             </div>
             <div className="flex items-center justify-center mb-4">
                 <img
-                    src={userprofile?.avatar}
+                    src={userprofile.avatar}
                     alt="Avatar"
                     className="w-16 h-16 rounded-full mr-4"
                 />
                 <div>
                     <p className={`${theme.primaryTextColor} text-lg font-bold`}>
-                        {userprofile?.name}
+                        {userprofile.name}
                     </p>
                     <p className={`${theme.secondaryTextColor} text-sm`}>
-                        {userprofile?.email}
+                        {userprofile.email}
                     </p>
                 </div>
             </div>
@@ -72,7 +72,8 @@ function ProfileSidebar({ userprofile }) {
                 <p className={`${theme.primaryTextColor} text-sm font-bold mr-2`}>Status:</p>
                 <p className={`${theme.primaryTextColor} text-sm`}>{userprofile?.status}</p>
             </div>
-            <div className="flex items-center mb-4">
+
+            {userprofile.verification && <div className="flex items-center mb-4">
                 <p className={`${theme.primaryTextColor} text-sm font-bold mr-2`}>
                     Verification:
                 </p>
@@ -80,8 +81,7 @@ function ProfileSidebar({ userprofile }) {
                     className={`text-sm ${userprofile.verification.isVerified
                             ? "text-green-500"
                             : "text-red-500"
-                        }`}
-                >
+                        }`}>
                     {userprofile.verification.isVerified ? "Verified" : "Not verified"}
                 </p>
                 <button
@@ -89,17 +89,18 @@ function ProfileSidebar({ userprofile }) {
                     className={`${userprofile.verification.isVerified
                             ? theme.primaryBtn
                             : theme.accentColor
-                        } ml-auto text-sm px-3 py-1 rounded-md font-bold`}
-                >
+                        } ml-auto text-sm px-3 py-1 rounded-md font-bold`}>
                     {!userprofile.verification.isVerified && "Verify"}
                 </button>
-            </div>
+            </div>}
+
             <button
                 onClick={doLogOut}
                 className={`${theme.primaryBtn} ${theme.hoverBtn} p-2 text-white font-bold flex flex-start justify-center mt-3 w-fit rounded cursor-pointer`}
             >
                 Logout
             </button>
+            
         </div>
 
 

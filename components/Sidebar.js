@@ -35,7 +35,7 @@ const Sidebar = ({ userProfile }) => {
 
         {/* homes */}
         <div>
-          <HomesSidebar homes={userProfile.homes} />
+          {(userProfile.homes && userProfile.homes.length>0) ? <HomesSidebar homes={userProfile.homes} /> : <p className='p-4 text-center font-semibold text-lg'>Please add home! no home yet</p>}
         </div>
 
         <button className={` ${theme.primaryBtn} ${theme.hoverBtn} text-white text-sm font-bold  p-2 rounded ml-4 mt-10`} onClick={handleAddHomeClick}>

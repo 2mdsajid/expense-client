@@ -27,7 +27,7 @@ function Expense() {
     const [currentexpenses, setcurrentExpenses] = useState([])
     const [userexpenses, setuserExpenses] = useState([]) //all expenses after fetch
 
-    const [currentpage,setcurrentPage] = useState('expense')
+    const [currentpage, setcurrentPage] = useState('expense')
 
     const [showDialog, setShowDialog] = useState(false);
 
@@ -107,7 +107,7 @@ function Expense() {
     useEffect(() => {
         const logintoken = Cookies.get('logintoken');
         if (logintoken) {
-            const userProfile = JSON.parse(localStorage.getItem('userprofile'));
+            const userProfile = JSON.parse(sessionStorage.getItem('userprofile'));
             setUserProfile(userProfile)
 
             console.log('prof in exp from local storage', userProfile)
@@ -174,24 +174,26 @@ function Expense() {
                         </SwipeableDrawer>
                     </div>
 
-                    <div>
+                    <div className={`w-full h-full ${theme.boxbg}`}>
                         {userProfile && <Sidebar userProfile={userProfile} />}
                     </div>
 
                 </div>
 
                 {/* REST OMPONENTS */}
-                <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
+                {currentexpenses.length > 0 ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
 
                     {/* expense table */}
                     {currentexpenses && <ExpenseTable userexpenses={currentexpenses} head={'Recent Home Expenses'} />}
 
-                </div>
+                </div> : <div className='p-4 text-center font-semibold text-lg'>
+                    <p>{'Please add expenses! you do nat have any expenses to show'}</p>
+                </div>}
 
                 {/* SIDEBAR FOR EXPENSE */}
-                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.backgroundColor} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.backgroundColor} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto mb-10`}>
 
-                    <div className="md:hidden invisible">
+                    <div className="md:hidden invisible w-full h-full">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer
                             anchor="left"
@@ -203,7 +205,7 @@ function Expense() {
                             {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
                         </SwipeableDrawer>
                     </div>
-                    <div>
+                    <div className={`w-full h-full ${theme.boxbg}`}>
                         {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
                         {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
                     </div>

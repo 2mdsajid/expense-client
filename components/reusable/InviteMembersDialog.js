@@ -74,7 +74,7 @@ const InviteMembersDialog = ({ onClose }) => {
                 setalertSeverity('success')
                 setMembers([{ name: '', email: '' }]);
 
-                const userprofile = JSON.parse(localStorage.getItem('userprofile'));
+                const userprofile = JSON.parse(sessionStorage.getItem('userprofile'));
                 const updatedHomes = userprofile.homes.map(home => {
                   if (home._id === data.home._id) {
                     return data.home;
@@ -84,7 +84,9 @@ const InviteMembersDialog = ({ onClose }) => {
                 });
                 
                 userprofile.homes = updatedHomes;
-                localStorage.setItem('userprofile', JSON.stringify(userprofile));
+                sessionStorage.setItem('userprofile', JSON.stringify(userprofile));
+
+                return
             
                 router.push({
                     pathname: '/dashboard',
