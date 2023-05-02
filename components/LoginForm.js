@@ -95,7 +95,7 @@ const LoginForm = ({ useremail }) => {
                     name="email"
                     value={email}
                     onChange={(event) => setEmail(event.currentTarget.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                    className={`${theme.boxbg} ${theme.primaryTextColor} w-full px-3 py-2 border border-gray-300 rounded-lg `}
                     placeholder="Email"
                     required
                     pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -113,9 +113,10 @@ const LoginForm = ({ useremail }) => {
                     name="password"
                     value={password}
                     onChange={(event) => setPassword(event.currentTarget.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+                    className={`${theme.boxbg} ${theme.primaryTextColor} w-full px-3 py-2 border border-gray-300 rounded-lg `}
                     placeholder="Password"
                     required
+                    autocomplete="off"
                     minLength="8"
                 />
                 {password.length > 0 && <p className="text-red-500">{password.length < 8 && 'Password must be at least 8 characters long'}</p>}

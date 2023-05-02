@@ -88,9 +88,17 @@ function Token() {
     }, [token]); // Call only once when the component mounts
 
     return (
-        <div>
-            {isLoading ? <CircularProgress /> : <>{successmsg}</>}
+
+        <div class="flex justify-center items-center h-screen">
+            <div class="w-96 bg-gray-100 rounded-lg p-8 flex flex-col justify-center items-center">
+                <h2 class="text-2xl font-semibold mb-6">Please wait while we verify your email address...</h2>
+                <div class="mb-6">
+                    {isLoading ? <CircularProgress className="text-blue-500" /> : <>{successmsg}</>}
+                </div>
+                <p class="text-lg text-center">Thank you for using Home Split. You will be redirected shortly.</p>
+            </div>
         </div>
+
     );
 }
 

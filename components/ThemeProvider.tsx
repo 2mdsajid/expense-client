@@ -25,6 +25,10 @@ const lightTheme = {
     secondaryTextColor: 'text-gray-500',
     primaryColor: 'bg-blue-500',
     accentColor: 'teal-500',
+    primaryIcon : 'bg-gray-300',
+    hoverIcon :'bg-gray-500',
+    primaryBtn:'bg-blue-500',
+    hoverBtn:'bg-blue-700'
   };
   
   const darkTheme = {
@@ -34,22 +38,31 @@ const lightTheme = {
     secondaryTextColor: 'text-gray-400',
     primaryColor: 'bg-green-500',
     accentColor: 'purple-500',
+    primaryIcon : 'bg-gray-500',
+    hoverIcon :'bg-gray-700',
+    primaryBtn:'bg-blue-500',
+    hoverBtn:'bg-blue-700'
   };
   
   
 
 export const ThemeContext = createContext<ThemeContextType>({
-    isDark: false,
+    isDark: true,
     toggleTheme: () => { },
     theme: lightTheme,
 });
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
-    const [isDark, setIsDark] = useState<boolean>(false);
+    const [isDark, setIsDark] = useState<boolean>(true);
 
+    // if (typeof window !== 'undefined') {
+    //     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    //     setIsDark(mediaQuery.matches ? true : false)
+    //     // Access the window object here
+    //   }
     const toggleTheme = () => {
         setIsDark((prev) => !prev);
-        console.log('tp',isDark)
+        console.log('mode changed',isDark)
     };
 
     const theme = isDark ? darkTheme : lightTheme;

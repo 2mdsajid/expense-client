@@ -1,10 +1,18 @@
 import { Router, useRouter } from 'next/router';
-import React from 'react'
+import React, { useContext } from 'react'
 import Cookies from 'js-cookie';
 
+import { ThemeContext } from '../ThemeProvider';
+
+
 function ProfileSidebar({ userprofile }) {
+    const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
     const router = useRouter()
+
+    const handleVerification = () => {
+        return
+    }
 
 
     const doLogOut = () => {
@@ -35,32 +43,65 @@ function ProfileSidebar({ userprofile }) {
 
     return (
 
-        <div className="p-4">
-            <h2 className="text-lg font-bold mb-4">Profile</h2>
-            <div className="flex items-center mb-4">
+        <div className={`${theme.boxbg} p-4 rounded-md shadow-md h-full`}>
+            <div className="flex justify-between items-center mb-5">
+                <h2 className={`${theme.primaryTextColor} text-2xl py-3 font-bold`}>Profile</h2>
+                <button
+                    className={`rounded-full w-10 h-10 focus:outline-none border ${theme.boxbg}`}
+                    onClick={toggleTheme}
+                >
+                    {isDark ? "🌞" : "🌙"}
+                </button>
+            </div>
+            <div className="flex items-center justify-center mb-4">
                 <img
                     src={userprofile?.avatar}
                     alt="Avatar"
-                    className="w-10 h-10 rounded-full mr-2"
+                    className="w-16 h-16 rounded-full mr-4"
                 />
                 <div>
-                    <p className="text-sm font-bold">{userprofile?.name}</p>
-                    <p className="text-sm text-gray-600">{userprofile?.email}</p>
+                    <p className={`${theme.primaryTextColor} text-lg font-bold`}>
+                        {userprofile?.name}
+                    </p>
+                    <p className={`${theme.secondaryTextColor} text-sm`}>
+                        {userprofile?.email}
+                    </p>
                 </div>
             </div>
             <div className="flex items-center mb-4">
-                <p className="text-sm font-bold mr-2">Status:</p>
-                <p className="text-sm">{userprofile?.status}</p>
+                <p className={`${theme.primaryTextColor} text-sm font-bold mr-2`}>Status:</p>
+                <p className={`${theme.primaryTextColor} text-sm`}>{userprofile?.status}</p>
             </div>
-            <div className="flex items-center">
-                <p className="text-sm font-bold mr-2">Verification:</p>
-                <p
-                    className={`text-sm ${userprofile?.verification.isVerified ? 'text-green-500' : 'text-red-500'}`}>
-                    {userprofile?.verification.isVerified ? 'Verified' : 'Not verified'}
+            <div className="flex items-center mb-4">
+                <p className={`${theme.primaryTextColor} text-sm font-bold mr-2`}>
+                    Verification:
                 </p>
-                <p onClick={doLogOut}>logout</p>
+                <p
+                    className={`text-sm ${userprofile.verification.isVerified
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                >
+                    {userprofile.verification.isVerified ? "Verified" : "Not verified"}
+                </p>
+                <button
+                    onClick={handleVerification}
+                    className={`${userprofile.verification.isVerified
+                            ? theme.primaryBtn
+                            : theme.accentColor
+                        } ml-auto text-sm px-3 py-1 rounded-md font-bold`}
+                >
+                    {!userprofile.verification.isVerified && "Verify"}
+                </button>
             </div>
+            <button
+                onClick={doLogOut}
+                className={`${theme.primaryBtn} ${theme.hoverBtn} p-2 text-white font-bold flex flex-start justify-center mt-3 w-fit rounded cursor-pointer`}
+            >
+                Logout
+            </button>
         </div>
+
 
     )
 }

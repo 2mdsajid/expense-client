@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import ExpenseDialog from './ExpenseDialog'
 
 import { expenses_data } from '../constant';
 
-function ExpenseTable({ userexpenses }) {
+import { ThemeContext } from '../ThemeProvider';
+
+
+function ExpenseTable({ userexpenses,head }) {
+    const { isDark, toggleTheme, theme } = useContext(ThemeContext);
+    
     const itemsPerPage = 5
     const [open, setOpen] = useState(false); //to show/hide the dialog
     const [currentexpense, setcurrentExpense] = useState({}) //to show the content of dialog
@@ -13,7 +18,7 @@ function ExpenseTable({ userexpenses }) {
     // console.log('maxpages', maxPages)
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = userexpenses.slice(indexOfFirstItem, indexOfLastItem);
+    const currentItems = userexpenses.slice(indexOfFirstItem, indexOfLastItem).slice().reverse()
 
     const nextPage = () => {
         if (currentPage < maxPages) {
@@ -27,11 +32,11 @@ function ExpenseTable({ userexpenses }) {
         }
     };
     return (
-        <div className="mx-auto p-4 bg-white rounded-lg shadow-lg mb-4 overflow-x-auto">
-            <h2 className="text-lg font-bold mb-4">Recent Expenses</h2>
+        <div className={`mx-auto p-4 ${theme.boxbg} ${theme.primaryTextColor} rounded-lg shadow-lg mb-4 overflow-x-auto`}>
+            <h2 className="text-lg font-bold mb-4">{head}</h2>
             <table className="w-full table-auto ">
                 <thead>
-                    <tr className="bg-gray-200 text-gray-600 text-sm font-semibold uppercase">
+                    <tr className={`${theme.boxbg} ${theme.primaryTextColor} text-sm font-semibold uppercase`}>
                         <th className="py-2 px-4">Date</th>
                         <th className="py-2 px-4">Item</th>
                         {/* <th className="py-2 px-4">Description</th> */}
@@ -51,13 +56,13 @@ function ExpenseTable({ userexpenses }) {
                                 {/* <td className="py-2 px-4">{expense?.addedby}</td> */}
                                 <td className="py-2 px-4">
                                     <button
-                                        className="bg-gray-200 hover:bg-gray-300 py-1 px-2 rounded-full"
+                                        className={`${theme.primaryIcon} hover:${theme.hoverIcon}  py-1 px-2 rounded-full`}
                                         onClick={() => {
                                             setcurrentExpense(expense)
                                             setOpen(true)
                                         }}
                                     >
-                                        <i className="fas fa-info-circle">i</i>
+                                        <i className="fas fa-info-circle ">i</i>
                                     </button>
                                 </td>
                                 {open && <ExpenseDialog expense={currentexpense} setOpen={setOpen} />}
@@ -69,15 +74,15 @@ function ExpenseTable({ userexpenses }) {
             {/* pagination */}
 
             {maxPages>1 && <div className='flex items-center justify-center'>
-                <button onClick={prevPage} className="bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-full">
+                <button onClick={prevPage} className={`${theme.primaryIcon} hover:${theme.hoverIcon} py-2 px-3 rounded-full`}>
                     <i className="fas fa-arrow-left">{'<'}</i>
                 </button>
                 {Array.from({ length: maxPages }, (_, index) => (
-                    <button key={index} onClick={() => setCurrentPage(index + 1)} className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 mx-1 rounded-full">
+                    <button key={index} onClick={() => setCurrentPage(index + 1)} className={`bg-gray-${index===currentPage-1 ? '700' : '500'} hover:bg-gray-700 text-white font-bold py-2 px-4 mx-1 rounded-full`}>
                         {index + 1}
                     </button>
                 ))}
-                <button onClick={nextPage} className="bg-gray-200 hover:bg-gray-300 py-2 px-3 rounded-full">
+                <button onClick={nextPage} className={`${theme.primaryIcon} hover:${theme.hoverIcon} py-2 px-3 rounded-full`}>
                     <i className="fas fa-arrow-right">{'>'}</i>
                 </button>
             </div>}

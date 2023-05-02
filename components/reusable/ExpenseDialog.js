@@ -1,5 +1,5 @@
 import Cookies from "js-cookie";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 // server
 import { BACKEND } from "../constant";
@@ -7,9 +7,11 @@ import { BACKEND } from "../constant";
 import io from 'socket.io-client';
 
 
+import { ThemeContext } from '../ThemeProvider';
 
 
 const ExpenseDialog = ({ expense, setOpen }) => {
+    const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
     const [userId, setUserId] = useState('')
 
@@ -35,7 +37,7 @@ const ExpenseDialog = ({ expense, setOpen }) => {
     const handleCommentSubmit = async (event) => {
         event.preventDefault();
 
-        // console.log(newcomment,userId)
+        console.log(newcomment,userId)
 
         // console.log(expense._id)
         const date = new Date(); // or use Date.now() if you don't need the current date
@@ -57,13 +59,13 @@ const ExpenseDialog = ({ expense, setOpen }) => {
             const userExpenses = JSON.parse(sessionStorage.getItem('userexpenses'));
 
             // const home = homeExpenses.find((h) => h.home === newexp.newexp.home);
-            if(homeExpenses){
+            if (homeExpenses) {
                 const expenseIndex = homeExpenses.findIndex((e) => e._id === expense._id);
                 homeExpenses[expenseIndex] = newexp.newexp;
             }
 
             // userexpense
-            if(userExpenses){
+            if (userExpenses) {
                 const userexpenseIndex = userExpenses.findIndex((e) => e._id === expense._id);
                 userExpenses[userexpenseIndex] = newexp.newexp
             }
@@ -142,105 +144,103 @@ const ExpenseDialog = ({ expense, setOpen }) => {
 
 
     return (
-        <div className="fixed z-10 inset-0 overflow-y-auto">
+        <div className="fixed z-10 inset-0 overflow-y-auto pt-10">
             <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div className="fixed inset-0 transition-opacity" aria-hidden="true" onClick={() => setOpen(false)}>
-                    <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                </div>
-                <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-                <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div className="sm:flex">
 
-                            {/* circle icon */}
-                            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                                <i className="fas fa-info-circle text-green-500">i</i>
-                            </div>
+                <div onClick={() => setOpen(false)} className={`absolute w-[100vw] h-[100vh] inset-0 ${theme.boxbg} opacity-800`}></div>
 
-                            {/* info */}
-                            <div className="mt-3 sm:mt-0 sm:ml-4 text-left">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">Expense Information</h3>
-                                <div className="mt-2">
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-bold">Item: </span>
-                                        {expense.item}
-                                    </p>
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-bold">Description: </span>
-                                        {expense.description}
-                                    </p>
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-bold">Price: </span>
-                                        {expense.price}
-                                    </p>
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-bold">Added By: </span>
-                                        {expense.addedby.name}
-                                    </p>
-                                    <p className="text-sm text-gray-500 mb-2">
-                                        <span className="font-bold">Date: </span>
-                                        {new Date(expense.date).toLocaleDateString()}
-                                    </p>
-                                </div>
-                            </div>
+                {/* <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span> */}
+                <div className={`inline-block align-bottom ${theme.boxbg} ${theme.primaryTextColor} rounded-lg text-left overflow-scroll shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full px-5`}>
+
+                    <div className="sm:flex">
+
+                        {/* circle icon */}
+                        <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i className="fas fa-info-circle text-green-500">i</i>
                         </div>
 
-                        {/* comments */}
-                        <div className="mt-5 sm:ml-4 text-left">
-                            <h3 className="text-lg leading-6 font-medium text-gray-900">Comments</h3>
+                        {/* info */}
+                        <div className="mt-3 sm:mt-0 sm:ml-4 text-left">
+                            <h3 className={`${theme.primaryTextColor} text-lg leading-6 font-medium `}>Expense Information</h3>
                             <div className="mt-2">
-                                {comments.length > 0 ? (
-                                    <ul className="divide-y divide-gray-200">
-                                        {comments.map((comment, index) => (
-                                            <li key={index} className="py-2 flex">
-                                                <div className="ml-3">
-                                                    <p className="text-sm font-medium text-gray-900">{comment.user.name}</p>
-                                                    <div className="mt-2 text-sm text-gray-500">
-                                                        <p>{comment.comment}</p>
-                                                        {/* <p className="mt-2 text-xs text-gray-400">{format(new Date(comment.date), 'MMMM dd, yyyy h:mm a')}</p> */}
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                ) : (
-                                    <p className="text-sm text-gray-500">No comments yet.</p>
-                                )}
+                                <p className={`text-sm ${theme.secondaryTextColor} mb-2`}>
+                                    <span className="font-bold">Item: </span>
+                                    {expense.item}
+                                </p>
+                                <p className={`text-sm ${theme.secondaryTextColor} mb-2`}>
+                                    <span className="font-bold">Description: </span>
+                                    {expense.description}
+                                </p>
+                                <p className={`text-sm ${theme.secondaryTextColor} mb-2`}>
+                                    <span className="font-bold">Price: </span>
+                                    {expense.price}
+                                </p>
+                                <p className={`text-sm ${theme.secondaryTextColor} mb-2`}>
+                                    <span className="font-bold">Added By: </span>
+                                    {expense.addedby.name}
+                                </p>
+                                <p className={`text-sm ${theme.secondaryTextColor} mb-2`}>
+                                    <span className="font-bold">Date: </span>
+                                    {new Date(expense.date).toLocaleDateString()}
+                                </p>
                             </div>
                         </div>
-
-
-                        {/* add comment */}
-                        <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-col mt-5">
-                            {/* <h1 className=''>Add Comment</h1> */}
-                            <form onSubmit={handleCommentSubmit} className="w-full">
-                                <div className="flex flex-col">
-                                    <label htmlFor="comment" className="mt-3 text-sm font-medium text-gray-900">
-                                        Add a comment
-                                    </label>
-                                    <textarea
-                                        id="comment"
-                                        name="comment"
-                                        rows={3}
-                                        className="mt-1 py-2 px-3 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"
-                                        value={newcomment}
-                                        onChange={(e) => setnewComment(e.target.value)}
-                                        required
-                                    />
-                                </div>
-                                <div className="mt-3 text-right sm:mt-0 sm:ml-3">
-                                    <button
-                                        type="submit"
-                                        className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                    >
-                                        Add
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-
                     </div>
+
+                    {/* comments */}
+                    <div className="mt-5 sm:ml-4 text-left">
+                        <h3 className={`text-lg leading-6 font-medium ${theme.primaryTextColor} `}>Comments</h3>
+                        <div className="mt-2">
+                            {comments.length > 0 ? (
+                                <ul className="divide-y divide-gray-200">
+                                    {comments.map((comment, index) => (
+                                        <li key={index} className="py-2 flex">
+                                            <div className="ml-3">
+                                                <p className={` ${theme.primaryTextColor} text-sm font-medium`}>{comment.user.name}</p>
+                                                <div className="mt-2 text-sm text-gray-500">
+                                                    <p>{comment.comment}</p>
+                                                    {/* <p className="mt-2 text-xs text-gray-400">{format(new Date(comment.date), 'MMMM dd, yyyy h:mm a')}</p> */}
+                                                </div>
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p className="text-sm text-gray-500">No comments yet.</p>
+                            )}
+                        </div>
+                    </div>
+
+
+                    {/* add comment */}
+                    <div className={` ${theme.boxbg} px-4 py-3 sm:px-6 sm:flex sm:flex-col mt-5`}>
+                        {/* <h1 className=''>Add Comment</h1> */}
+                        <form onSubmit={handleCommentSubmit} className="w-full">
+                            <div className="flex flex-col">
+                                <label htmlFor="comment" className="mt-3 text-sm font-medium text-gray-900">
+                                    Add a comment
+                                </label>
+                                <textarea
+                                    id="comment"
+                                    name="comment"
+                                    rows={3}
+                                    className={` ${theme.boxbg} mt-1 py-2 px-3 block w-full border border-gray-500 rounded-md ${theme.primaryTextColor} shadow-sm`}
+                                    value={newcomment}
+                                    onChange={(e) => setnewComment(e.target.value)}
+                                    required
+                                />
+                            </div>
+                            <div className="mt-3 text-right sm:mt-0 sm:ml-3">
+                                <button
+                                    type="submit"
+                                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600"
+                                >
+                                    Add
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
             </div>
         </div>

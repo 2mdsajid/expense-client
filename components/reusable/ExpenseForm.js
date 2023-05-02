@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Cookies from 'js-cookie'
 
 import { BACKEND } from '../constant';
 
 import io from 'socket.io-client';
 
-const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDialog, members }) => {
+import { ThemeContext } from '../ThemeProvider';
+
+const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseDialog, members }) => {
+  const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
   const [item, setItem] = useState('');
   const [price, setPrice] = useState('');
@@ -51,7 +54,7 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
       expense.sharing = { user: sharedBy, share: Number(share) }
     }
 
-    console.log('to add ex[ense',expense)
+    console.log('to add ex[ense', expense)
 
     socket.emit('addexpense', expense, homeid);
 
@@ -59,11 +62,18 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
       console.log('new expense from socket', data)
       sessionStorage.setItem(`homeexpenses-${data.homeid}`, JSON.stringify(data.home));
       sessionStorage.setItem('userexpenses', JSON.stringify(data.user));
-       setcurrentExpenses(data.home)
-       setuserExpenses(data.user)
-       
-       console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ data.user:", data.user)
-       console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ setuserExpenses:", setuserExpenses)
+      setcurrentExpenses(data.home)
+      setuserExpenses(data.user)
+
+      setItem('');
+      setPrice('');
+      setDescription('');
+      setCategory('misc');
+      setSharedBy('');
+      setShare('');
+
+      // console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ data.user:", data.user)
+      // console.log("🚀 ~ file: ExpenseForm.js:66 ~ socket.on ~ setuserExpenses:", setuserExpenses)
     })
 
     // try {
@@ -96,49 +106,49 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
 
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto mt-8">
+    <form onSubmit={handleSubmit} className={`${theme.boxbg} max-w-sm mx-auto mt-8`}>
       <div className="mb-4">
-        <label htmlFor="item" className="block text-gray-700 font-bold mb-2">
-          Item:
+        <label htmlFor="item" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Item
         </label>
         <input
           type="text"
           id="item"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={item}
           onChange={(e) => setItem(e.target.value)}
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="price" className="block text-gray-700 font-bold mb-2">
-          Price:
+        <label htmlFor="price" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Price
         </label>
         <input
           type="number"
           id="price"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={price}
           onChange={(e) => setPrice(e.target.value)}
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="description" className="block text-gray-700 font-bold mb-2">
-          Description:
+        <label htmlFor="description" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Description
         </label>
         <textarea
           id="description"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </div>
       <div className="mb-4">
-        <label htmlFor="category" className="block text-gray-700 font-bold mb-2">
-          Category:
+        <label htmlFor="category" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Category
         </label>
         <select
           id="category"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
@@ -148,12 +158,12 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
         </select>
       </div>
       <div className="mb-4">
-        <label htmlFor="sharedBy" className="block text-gray-700 font-bold mb-2">
-          Shared by:
+        <label htmlFor="sharedBy" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Shared by
         </label>
         <select
           id="sharedBy"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={sharedBy}
           onChange={(e) => setSharedBy(e.target.value)}
         >
@@ -166,13 +176,14 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
         </select>
       </div>
       <div className="mb-4">
-        <label htmlFor="share" className="block text-gray-700 font-bold mb-2">
-          Share:
+        <label htmlFor="share" className={`block ${theme.primaryTextColor} font-bold mb-2`}>
+          Amount shared
         </label>
         <input
           type="number"
           id="share"
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          placeholder='only if shared by'
+          className={` ${theme.boxbg} ${theme.secondaryTextColor} shadow appearance-none border rounded w-full py-2 px-3 leading-tight focus:outline-none focus:shadow-outline`}
           value={share}
           onChange={(e) => setShare(e.target.value)}
         />
@@ -186,14 +197,6 @@ const ExpenseForm = ({ setcurrentExpenses,setuserExpenses,socket, handleCloseDia
         </button>
       </div>
 
-      <div>
-        <button
-          className="border border-gray-300 hover:bg-gray-100 text-gray-700 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-          type="button"
-          onClick={handleCloseDialog}>
-          cancel
-        </button>
-      </div>
 
     </form>
   );

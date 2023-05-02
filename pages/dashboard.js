@@ -58,13 +58,15 @@ function Dashboard() {
 
 
 
-    const [drawerOpen, setDrawerOpen] = useState(false);
+    const [profiledrawer, setprofileDrawer] = useState(false);
+    const [expensedrawer, setexpenseDrawer] = useState(false);
 
+    const [currentpage,setcurrentPage] = useState('dashboard')
 
     const [showSidebar, setShowSidebar] = useState(true); //sidebar toggle
 
     const [currentexpenses, setcurrentExpenses] = useState([])
-    
+
 
     const [homeid, sethomeId] = useState()
 
@@ -73,7 +75,7 @@ function Dashboard() {
     socket.emit('join-expense', homeid);
 
     // toggle the sidebar in small screens
-    const toggleDrawer = (open) => (event) => {
+    const toggleprofileDrawer = (open) => (event) => {
         // ignore events from input, textarea and buttons inside the drawer
         if (
             event &&
@@ -82,10 +84,21 @@ function Dashboard() {
         ) {
             return;
         }
-
-        setDrawerOpen(open);
+        setprofileDrawer(open);
     };
 
+    // toggle the sidebar in small screens
+    const toggleexpenseDrawer = (open) => (event) => {
+        // ignore events from input, textarea and buttons inside the drawer
+        if (
+            event &&
+            event.type === 'keydown' &&
+            ((event).key === 'Tab' || (event).key === 'Shift')
+        ) {
+            return;
+        }
+        setexpenseDrawer(open);
+    };
     // fetch home expenses for sesion storage
     async function fetchhomeExpenses(homeId) {
         try {
@@ -221,19 +234,19 @@ function Dashboard() {
 
     return (
         <div className={`min-h-screen w-screen ${theme.backgroundColor} ${theme.primaryTextColor}`}>
-            <Header user={userProfile} setDrawerOpen={setDrawerOpen} />
+            <Header user={userProfile} setprofileDrawer={setprofileDrawer} setexpenseDrawer={setexpenseDrawer} currentpage={currentpage} />
             <div className="flex flex-wrap pt-10">
 
                 {/* SIDE BAR WITH DRAWER */}
-                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
 
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer
                             anchor="right"
-                            open={drawerOpen}
-                            onClose={toggleDrawer(false)}
-                            onOpen={toggleDrawer(true)}
+                            open={profiledrawer}
+                            onClose={toggleprofileDrawer(false)}
+                            onOpen={toggleprofileDrawer(true)}
                             className="block md:hidden">
                             {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} />}
                         </SwipeableDrawer>
@@ -246,44 +259,47 @@ function Dashboard() {
                 </div>
 
                 {/* REMAINING COMPONENT */}
-                <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
+                {userexpenses ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
                     {/* Recent expenses section */}
 
                     <div>
-                        <ExpenseTable userexpenses={userexpenses} />
+                        <ExpenseTable userexpenses={userexpenses} head={'Your Recent Expenses'} />
                     </div>
 
                     <div className="flex flex-wrap mx-auto lg:justify-evenly">
                         {/* Graphs section */}
-                        <div className="w-full mx-auto lg:w-[49%] p-4 bg-white rounded-lg shadow-lg mb-4">
+                        <div className={`w-full mx-auto lg:w-[49%] p-4 ${theme.boxbg}  ${theme.primaryTextColor} rounded-lg shadow-lg mb-4`}>
                             <h2 className="text-lg font-bold mb-4">Expenses by month</h2>
-                            <BarCharts expensesData={expenses_data} />
+                            <BarCharts expensesData={userexpenses} head={'Expenses by category'} />
                         </div>
-                        <div className="w-full mx-auto lg:w-[49%] p-4 bg-white rounded-lg shadow-lg mb-4">
+                        <div className={`w-full mx-auto lg:w-[49%] p-4 ${theme.boxbg}  ${theme.primaryTextColor} rounded-lg shadow-lg mb-4`}>
+                            <h2 className="text-lg font-bold mb-4">Expenses by category</h2>
+                            <PieCharts data={userexpenses} head={'Expenses by category'} />
+                        </div>
+                        {/* <div className={`w-full mx-auto lg:w-[49%] p-4 ${theme.boxbg}  ${theme.primaryTextColor} rounded-lg shadow-lg mb-4`}>
                             <h2 className="text-lg font-bold mb-4">Expenses by month</h2>
-                            <PieCharts data={expenses_data} />
+                            <PieCharts data={userexpenses} />
                         </div>
-                        <div className="w-full mx-auto lg:w-[49%] p-4 bg-white rounded-lg shadow-lg mb-4">
+                        <div className={`w-full mx-auto lg:w-[49%] p-4 ${theme.boxbg}  ${theme.primaryTextColor} rounded-lg shadow-lg mb-4`}>
                             <h2 className="text-lg font-bold mb-4">Expenses by month</h2>
-                            <PieCharts data={expenses_data} />
-                        </div>
-                        <div className="w-full mx-auto lg:w-[49%] p-4 bg-white rounded-lg shadow-lg mb-4">
-                            <h2 className="text-lg font-bold mb-4">Expenses by month</h2>
-                            <PieCharts data={expenses_data} />
-                        </div>
+                            <PieCharts data={userexpenses} />
+                        </div> */}
                     </div>
 
-                </div>
+                </div> : <div>
+                    <p>Please click home icon and add expenses !</p>
+                </div>}
 
                 {/* SIDE BAR FOR HOMES */}
-                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
+
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer
                             anchor="left"
-                            open={drawerOpen}
-                            onClose={toggleDrawer(false)}
-                            onOpen={toggleDrawer(true)}
+                            open={expensedrawer}
+                            onClose={toggleexpenseDrawer(false)}
+                            onOpen={toggleexpenseDrawer(true)}
                             className="block md:hidden">
                             {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
                             {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}

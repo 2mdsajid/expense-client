@@ -13,8 +13,8 @@ import { useRouter } from 'next/router'
 
 
 const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
-  const router = useRouter();
   
+  const router = useRouter();
   const { isDark, toggleTheme, theme } = useContext(ThemeContext)
 
   // dialogue box for messages
@@ -110,7 +110,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           name="name"
           value={values.name}
           onChange={(event) => setValues({ ...values, name: event.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${theme.boxbg}  ${theme.primaryTextColor}`}
           placeholder="Name"
           required
           minLength="3"
@@ -124,7 +124,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           name="email"
           value={values.email}
           onChange={(event) => setValues({ ...values, email: event.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${theme.boxbg} ${theme.primaryTextColor}`}
           placeholder="Email"
           required
           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
@@ -138,7 +138,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           name="password"
           value={values.password}
           onChange={(event) => setValues({ ...values, password: event.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${theme.boxbg} ${theme.primaryTextColor}`}
           placeholder="Password"
           required
           minLength="8"
@@ -152,7 +152,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           name="confirmPassword"
           value={values.confirmPassword}
           onChange={(event) => setValues({ ...values, confirmPassword: event.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900"
+          className={`w-full px-3 py-2 border border-gray-300 rounded-lg ${theme.boxbg} ${theme.primaryTextColor}`}
           placeholder="Confirm Password"
           required
           pattern={values.password}
@@ -160,7 +160,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
         {values.confirmPassword.length > 0 && <p className="text-red-500">{values.confirmPassword !== values.password && 'Passwords do not match'}</p>}
       </div>
       <div className="mb-4">
-        <label htmlFor="image" className="block font-medium text-gray-500 mb-1">
+        <label htmlFor="image" className={`block font-medium ${theme.primaryTextColor} mb-1`}>
           Profile Pic
         </label>
         <input
@@ -178,7 +178,7 @@ const SignUpForm = ({ onSubmit, username, useremail, userhomeid }) => {
           }}
           className="hidden"
         />
-        <div className="relative rounded-lg border-dashed border-2 border-gray-300 bg-gray-50 flex justify-center items-center">
+        <div className={`relative rounded-lg border-dashed border-2 border-gray-300 ${theme.boxbg}  ${theme.primaryTextColor} flex justify-center items-center`}>
           {values.image ? (
             <>
               <img src={URL.createObjectURL(values.image)} alt="Selected file" className="rounded-lg w-[10rem] md:hidden" />

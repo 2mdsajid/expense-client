@@ -27,6 +27,7 @@ function Expense() {
     const [currentexpenses, setcurrentExpenses] = useState([])
     const [userexpenses, setuserExpenses] = useState([]) //all expenses after fetch
 
+    const [currentpage,setcurrentPage] = useState('expense')
 
     const [showDialog, setShowDialog] = useState(false);
 
@@ -155,11 +156,11 @@ function Expense() {
 
     return (
         <div className={`min-h-screen w-screen ${theme.backgroundColor} ${theme.primaryTextColor}`}>
-            <Header user={userProfile} setprofileDrawer={setprofileDrawer} setexpenseDrawer={setexpenseDrawer} />
+            <Header user={userProfile} setprofileDrawer={setprofileDrawer} setexpenseDrawer={setexpenseDrawer} currentpage={currentpage} />
             <div id='othercontents' className="flex flex-wrap pt-10">
 
                 {/* SIDE BAR WITH PROFILE */}
-                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.backgroundColor} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
 
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
@@ -180,15 +181,16 @@ function Expense() {
                 </div>
 
                 {/* REST OMPONENTS */}
-                <div className='w-[90%] md:w-[70%] xl:w-[75%] mx-auto'>
+                <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
 
                     {/* expense table */}
-                    {currentexpenses && <ExpenseTable userexpenses={currentexpenses} />}
+                    {currentexpenses && <ExpenseTable userexpenses={currentexpenses} head={'Recent Home Expenses'} />}
 
                 </div>
 
                 {/* SIDEBAR FOR EXPENSE */}
-                <div className='hidden md:block md:w-[25%] xl:w-[20%] bg-white h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto'>
+                <div className={`hidden md:block md:w-[25%] xl:w-[20%] ${theme.backgroundColor} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
+
                     <div className="md:hidden invisible">
                         {/* <Button onClick={() => setDrawerOpen(true)}>Open Profile</Button> */}
                         <SwipeableDrawer

@@ -86,52 +86,54 @@ const ProfileDropdown = ({ user, setDrawerOpen }) => {
     );
 };
 
-const Header = ({ user, setprofileDrawer, setexpenseDrawer }) => {
+
+const Header = ({ user, setprofileDrawer, setexpenseDrawer, currentpage }) => {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
+
+
     return (
-        <header className={`flex items-center justify-between md:justify-center ${theme.backgroundColor} px-2`}>
-            <div className='md:hidden'>
+        <header className={`flex items-center justify-between md:justify-center ${theme.backgroundColor} px-8 border-b py-2`}>
+            <div className="md:hidden">
                 <img
                     src={user?.avatar}
                     alt="Avatar"
-                    className="w-8 h-8 rounded-full cursor-pointer"
+                    className={`w-8 h-8 rounded-full cursor-pointer border border-gray-800 ${theme.primaryColor}`}
                     onClick={() => {
-                        // handleDropdownClick()
-                        setprofileDrawer(true)
+                        setprofileDrawer(true);
+
                     }}
                 />
+
             </div>
             <div className="flex items-center space-x-4">
-                <Link href="/dashboard" className={`${theme.primaryTextColor} hover:underline`}>
-                    Dashboard
-                </Link>
-                {/* <Link href="/homes" className={`${theme.primaryTextColor} hover:underline`}>
-                    Homes
-                </Link> */}
-                <Link href="/expense" className={`${theme.primaryTextColor} hover:underline`}>
-                    Expenses
-                </Link>
-            </div>
+    <Link href="/dashboard" className={`${theme.primaryTextColor} hover:underline ${currentpage === 'dashboard' && 'underline'}`} >
+        Dashboard
+    </Link>
+    <Link href="/expense" className={`${theme.primaryTextColor} hover:underline ${currentpage === 'expense' && 'underline'}`} >
+        Expenses
+    </Link>
+</div>
 
-            <div className='md:hidden'>
+
+
+            <div className="md:hidden">
                 <AddHomeWorkIcon
-                    fontSize="large"
-                    className="text-gray-600 cursor-pointer"
+                    fontSize="medium"
+                    className={`${theme.secondaryTextColor} cursor-pointer`}
                     onClick={() => {
                         // handleDropdownClick()
-                        setexpenseDrawer(true)
+                        setexpenseDrawer(true);
                     }}
                 />
             </div>
 
-
-
             {/* <div className="flex items-center space-x-4">
-                <ProfileDropdown user={user} setDrawerOpen={setDrawerOpen} />
-            </div> */}
+          <ProfileDropdown user={user} setDrawerOpen={setDrawerOpen} />
+        </div> */}
         </header>
     );
 };
+
 
 export default Header;

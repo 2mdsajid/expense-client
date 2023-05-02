@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
-const BarCharts = ({ expensesData }) => {
+const BarCharts = ({ expensesData, head }) => {
   const chartRef = useRef();
 
   useEffect(() => {

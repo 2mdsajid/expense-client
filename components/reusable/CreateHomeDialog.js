@@ -155,7 +155,7 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
         const data = { homeName, members };
         console.log('members', userId);
 
-         console.log('create home data', data)
+        console.log('create home data', data)
 
         try {
             const res = await fetch(BACKEND + '/createhome', {
@@ -192,7 +192,7 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                 window.location.reload();
 
                 // console.log("🚀 ~ file: CreateHomeDialog.js:193 ~ onSubmitCreate ~ reload:")
-                
+
 
             } else {
                 setalertSeverity('warning')
@@ -236,12 +236,12 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                     </svg>
                 </button>
 
+
                 {showjoinform && <div>
-                    {/* <JoinForm onSubmitJoin={onSubmitJoin} setjoinhomeId={setjoinhomeId} /> */}
-                    <div className="bg-white rounded-lg p-4">
+                    <div className={`${theme.boxbg} rounded-lg p-4`}>
                         <form onSubmit={onSubmitJoin}>
                             <div className="flex flex-col mb-4">
-                                <label htmlFor="homeid" className="text-gray-700 font-medium mb-2">
+                                <label htmlFor="homeid" className={`${theme.primaryTextColor} font-medium mb-2`}>
                                     Home ID
                                 </label>
                                 <input
@@ -250,21 +250,19 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                                     name="homeid"
                                     placeholder="Enter home ID"
                                     onChange={(e) => setjoinhomeId(e.currentTarget.value)}
-                                    className="py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200"
+                                    className={`py-2 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-200`}
                                 />
                             </div>
 
-                            {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
+                            {showalert && <div className={`my-1`}><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
 
-                            <div className={` text-white bg-gray-800 hover:bg-gray-700 font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer`}>
+                            <div className={`${theme.primaryColor} text-white font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer hover:${theme.hoverBtn}`}>
                                 {showprogress ?
                                     <div className='py-1'>
-
                                         <CircularProgress
                                             size={30}
                                             sx={{ color: '#ffffff' }}
                                         />
-
                                     </div> :
                                     <button
                                         type="submit"
@@ -272,41 +270,35 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                                         Join
                                     </button>}
                             </div>
-                            {/* <button
-                                type="submit"
-                                className="px-4 py-2 text-white bg-gray-800 rounded-md hover:bg-gray-700"
-                            >
-                                Join
-                            </button> */}
                         </form>
                     </div>
                 </div>}
 
 
                 {showcreateform && <div>
-                    {/* <CreateForm onSubmitCreate={onSubmitCreate} setHomeName={setHomeName} addMember={addMember} removeMember={removeMember} handleMemberChange={handleMemberChange} /> */}
-                    <div className="bg-white rounded-lg p-4">
-                        <h2 className="text-lg font-bold mb-4">Create Home</h2>
+                    <div className={` rounded-lg p-4 ${theme.boxbg}`}>
+                        <h2 className={`text-lg font-bold mb-4 ${theme.primaryTextColor}`}>Create Home</h2>
 
                         <form onSubmit={onSubmitCreate}>
-                            <label className="block mb-2 font-bold text-sm text-gray-800" htmlFor="homeName">
+                            <label className={`block mb-2 font-bold text-sm ${theme.primaryTextColor}`} htmlFor="homeName">
                                 Home Name
                             </label>
                             <input
                                 type="text"
                                 id="homeName"
                                 name="homeName"
+                                placeholder='Home Name'
                                 value={homeName}
                                 onChange={(event) => setHomeName(event.target.value)}
-                                className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                                className={`w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-${theme.primaryColor}`}
                                 required
                             />
                             {members.map((member, index) => (
                                 <div className="mt-4" key={index}>
-                                    <p className='block mb-2 font-bold text-sm text-gray-800'>
+                                    <p className={`block mb-2 font-bold text-sm ${theme.primaryTextColor}`}>
                                         Member {index + 1}
                                         <button
-                                            className="ml-2 text-red-500"
+                                            className={`ml-2 text-red-500`}
                                             onClick={() => removeMember(index)}>
                                             x
                                         </button>
@@ -318,7 +310,7 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                                         placeholder='Name'
                                         value={member.name}
                                         onChange={(event) => handleMemberChange(event, index)}
-                                        className="w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                                        className={`w-full px-3 py-2 mb-2 text-gray-700 border rounded-lg focus:outline-none focus:border-${theme.primaryColor}`}
                                         required
                                     />
 
@@ -329,25 +321,25 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                                         placeholder='Email'
                                         value={member.email}
                                         onChange={(event) => handleMemberChange(event, index)}
-                                        className="w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-blue-500"
+                                        className={`w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:border-${theme.primaryColor}`}
                                         required
                                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
                                     />
-                                    {member.email.length > 0 && <p className='text-red-600'>{!member.email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && 'Please enter a valid email'}</p>}
+                                    {member.email.length > 0 && <p className={`text-red-600 ${theme.secondaryTextColor}`}>{!member.email.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && 'Please enter a valid email'}</p>}
                                 </div>
                             ))}
-                            {showalert && <div className='my-1'><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
+                            {showalert && <div className={`my-1 ${theme.secondaryTextColor}`}><Alert severity={alertseverity} onClose={() => { setshowAlert(false) }}>{alertmessage}</Alert></div>}
 
                             <div className="flex justify-end mt-4">
                                 <button
                                     type="button"
-                                    className="px-4 py-2 text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300 mr-2"
+                                    className={`p-2 text-white border bg-slate-500 rounded-md hover:bg-${theme.hoverBtn} mr-2`}
                                     onClick={addMember}>
                                     Add Member
                                 </button>
 
 
-                                <div className={` text-white bg-gray-800 hover:bg-gray-700 font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer`}>
+                                <div className={`text-white ${theme.primaryColor} font-bold flex flex-start justify-center mt-3 w-1/3 rounded cursor-pointer`}>
                                     {showprogress ?
                                         <div className='py-1'>
                                             <CircularProgress
@@ -365,21 +357,29 @@ const CreateHomeDialog = ({ setIsDialogOpen }) => {
                     </div>
                 </div>}
 
-                {showform && <div className="p-4">
-                    <h2 className="text-lg font-bold mb-4">Create or Join Home</h2>
-                    <div className="flex items-center justify-between">
-                        <button
-                            className="px-4 py-2 mr-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                            onClick={createHome}>
-                            Create Home
-                        </button>
-                        <button
-                            className="px-4 py-2 text-gray-800 bg-gray-200 rounded-md hover:bg-gray-300"
-                            onClick={onJoinHome}>
-                            Join Home
-                        </button>
+                {showform && (
+                    <div className={`p-4 ${theme.backgroundColor}`}>
+                        <h2 className={`text-lg font-bold ${theme.primaryTextColor} mb-4`}>
+                            Create or Join Home
+                        </h2>
+                        <div className="flex items-center justify-between">
+                            <button
+                                className={`px-4 py-2 mr-2 text-white ${theme.primaryColor} rounded-md hover:${theme.hoverBtn}`}
+                                onClick={createHome}
+                            >
+                                Create Home
+                            </button>
+                            <button
+                                className={`px-4 py-2 ${theme.primaryTextColor} ${theme.boxbg} rounded-md hover:${theme.hoverBtn}`}
+                                onClick={onJoinHome}
+                            >
+                                Join Home
+                            </button>
+                        </div>
                     </div>
-                </div>}
+                )}
+
+
 
             </div>
         </div>
