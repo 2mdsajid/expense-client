@@ -115,7 +115,7 @@ function Dashboard() {
             }
 
             const data = await response.json();
-            console.log('home expense from in dashboard', data)
+            // console.log('home expense from in dashboard', data)
             sessionStorage.setItem(`homeexpenses-${homeId}`, JSON.stringify(data.expenses));
             return data.expenses;
 
@@ -138,7 +138,7 @@ function Dashboard() {
 
             const data = await res.json();
             setuserExpenses(data.expenses);
-            console.log('expenses of user', data)
+            // console.log('expenses of user', data)
             sessionStorage.setItem('userexpenses', JSON.stringify(data.expenses));
         } catch (err) {
             console.error(err);
@@ -159,7 +159,7 @@ function Dashboard() {
 
             const data = await res.json();
             setUserProfile(data.user);
-            console.log('userprofile loaded..........', data.user)
+            // console.log('userprofile loaded..........', data.user)
             sessionStorage.setItem('userprofile', JSON.stringify(data.user));
 
             if(data.user.homes.length>0){
@@ -202,10 +202,10 @@ function Dashboard() {
     // fetching the user profile
     useEffect(() => {
         if (userId) {
-            const userprofile = JSON.parse(sessionStorage.getItem('userprofile'));
-            if (userprofile && userprofile._id === userId) {
-                console.log('from local storage', userprofile);
-                setUserProfile(userprofile)
+            const userprofile = sessionStorage.getItem('userprofile');
+            if (userprofile && userprofile._id === userId && userprofile !== 'undefined') {
+                // console.log('from local storage', userprofile);
+                setUserProfile(JSON.parse(userprofile))
             } else {
                 fetchUserProfile(userId);
             }
@@ -217,7 +217,7 @@ function Dashboard() {
             const cachedExpenses = sessionStorage.getItem('userexpenses')
             if (cachedExpenses && cachedExpenses!=='undefined') {
                 setuserExpenses(JSON.parse(cachedExpenses));
-                console.log('expenses in session storage', cachedExpenses)
+                // console.log('expenses in session storage', cachedExpenses)
             } else {
                 fetchUserExpenses(userId);
             }

@@ -93,7 +93,7 @@ function Expense() {
 
             const data = await response.json();
             setcurrentExpenses(data.expenses)
-            console.log('home expense from req', data)
+            // console.log('home expense from req', data)
             sessionStorage.setItem(`homeexpenses-${homeId}`, JSON.stringify(data.expenses));
             return data.expenses;
 
@@ -110,7 +110,7 @@ function Expense() {
             const userProfile = JSON.parse(sessionStorage.getItem('userprofile'));
             setUserProfile(userProfile)
 
-            console.log('prof in exp from local storage', userProfile)
+            // console.log('prof in exp from local storage', userProfile)
         } else {
             router.push({
                 pathname: '/usersetup',
@@ -128,8 +128,8 @@ function Expense() {
         if (homeid) {
 
             const cachedhomeExpenses = sessionStorage.getItem(`homeexpenses-${homeid}`);
-            if (cachedhomeExpenses) {
-                console.log('expenses in session storage', JSON.parse(cachedhomeExpenses))
+            if (cachedhomeExpenses && cachedhomeExpenses!=='undefined') {
+                // console.log('expenses in session storage', JSON.parse(cachedhomeExpenses))
                 setcurrentExpenses(JSON.parse(cachedhomeExpenses));
             } else {
                 fetchExpenses(homeid)
