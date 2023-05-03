@@ -14,7 +14,7 @@ import Button from '@mui/material/Button';
 import { format } from 'date-fns';
 
 // websocket io
-import io from 'socket.io-client';
+// import io from 'socket.io-client';
 
 import BarCharts from '../components/charts/BarCharts'
 import PieCharts from '../components/charts/PieCharts'
@@ -70,9 +70,9 @@ function Dashboard() {
 
     const [homeid, sethomeId] = useState()
 
-    const socket = io(BACKEND)
+    // const socket = io(BACKEND)
     // to join the current room
-    socket.emit('join-expense', homeid);
+    // socket.emit('join-expense', homeid);
 
     // toggle the sidebar in small screens
     const toggleprofileDrawer = (open) => (event) => {
@@ -214,9 +214,9 @@ function Dashboard() {
                 fetchhomeExpenses(Cookies.get('homeid'))
             }
 
-            const cachedExpenses = JSON.parse(sessionStorage.getItem('userexpenses'));
-            if (cachedExpenses) {
-                setuserExpenses(cachedExpenses);
+            const cachedExpenses = sessionStorage.getItem('userexpenses')
+            if (cachedExpenses && cachedExpenses!=='undefined') {
+                setuserExpenses(JSON.parse(cachedExpenses));
                 console.log('expenses in session storage', cachedExpenses)
             } else {
                 fetchUserExpenses(userId);
@@ -308,11 +308,11 @@ function Dashboard() {
                             onOpen={toggleexpenseDrawer(true)}
                             className="block md:hidden">
                             {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
-                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} homes={userProfile.homes} sethomeId={sethomeId} />}
                         </SwipeableDrawer>
                     </div>
                     <div>
-                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} homes={userProfile.homes} sethomeId={sethomeId} />}
                         {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
                     </div>
                 </div>

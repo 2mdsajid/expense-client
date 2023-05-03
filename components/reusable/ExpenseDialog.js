@@ -9,11 +9,19 @@ import io from 'socket.io-client';
 
 import { ThemeContext } from '../ThemeProvider';
 
+import { Alert, AlertColor } from '@mui/material';
+
 
 const ExpenseDialog = ({ expense, setOpen }) => {
     const { isDark, toggleTheme, theme } = useContext(ThemeContext);
 
     const [userId, setUserId] = useState('')
+
+    const [pusher, setPusher] = useState(null)
+
+    const [alertseverity, setalertSeverity] = useState('warning');
+    const [alertmessage, setalertMessage] = useState('Please provide an authentic email');
+    const [showalert, setshowAlert] = useState(false)
 
 
     // replace with your websocket server address
@@ -21,10 +29,10 @@ const ExpenseDialog = ({ expense, setOpen }) => {
     //     socket.emit('join-room', expense._id);
     // }
 
-    const socket = io(BACKEND)
+    // const socket = io(BACKEND)
 
     // to join the current room
-    socket.emit('join-room', expense._id);
+    // socket.emit('join-room', expense._id);
     // socket.join(expense._id);
     // console.log(`Socket ${socket.id} joined room ${expense._id}`);
     // console.log(socket)
@@ -37,18 +45,20 @@ const ExpenseDialog = ({ expense, setOpen }) => {
     const handleCommentSubmit = async (event) => {
         event.preventDefault();
 
-        console.log(newcomment,userId)
+        console.log(newcomment, userId)
 
         // console.log(expense._id)
         const date = new Date(); // or use Date.now() if you don't need the current date
         const isoDate = date.toISOString();
 
-        socket.emit('addcomment', {
-            userId,
-            comment: newcomment,
-            expenseId: expense._id,
-            date: isoDate
-        }, expense._id);
+        // socket.emit('addcomment', {
+        //     userId,
+        //     comment: newcomment,
+        //     expenseId: expense._id,
+        //     date: isoDate
+        // }, expense._id);
+
+        /*
 
         socket.on('updatecomment', (newexp) => {
             console.log('comment from the server', newexp.newexp)
@@ -78,27 +88,67 @@ const ExpenseDialog = ({ expense, setOpen }) => {
             setUsername('');
             // expense.comments.push(comment.data)
         })
+        
+        */
+
+        // pusher---------------
+        
+
+        try {
+            const response = await fetch(BACKEND + '/expenses/addcomments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId,
+                    comment: newcomment,
+                    expenseId: expense._id
+                })
+            });
+
+            const data = await response.json();
+            setalertMessage(data.message)
+            console.log("🚀 ~ file: ExpenseForm.js:108 ~ handleSubmit ~ data:", data)
 
 
-        // try {
-        //     const response = await fetch(BACKEND + '/expenses/addcomments', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify({
-        //             userId,
-        //             comment: newcomment,
-        //             expenseId: expense._id
-        //         })
-        //     });
-        //     const data = await response.json();
-        //     console.log(data);
-        //     setnewComment('');
-        //     setUsername('');
-        // } catch (error) {
-        //     console.error(error);
-        // }
+            if (data.status === 201) {
+                setComments(data.newexp.comments)
+
+                const homeExpenses = JSON.parse(sessionStorage.getItem(`homeexpenses-${newexp.newexp.home}`));
+                const userExpenses = JSON.parse(sessionStorage.getItem('userexpenses'));
+
+                // const home = homeExpenses.find((h) => h.home === newexp.newexp.home);
+                if (homeExpenses) {
+                    const expenseIndex = homeExpenses.findIndex((e) => e._id === expense._id);
+                    homeExpenses[expenseIndex] = newexp.newexp;
+                }
+
+                // userexpense
+                if (userExpenses) {
+                    const userexpenseIndex = userExpenses.findIndex((e) => e._id === expense._id);
+                    userExpenses[userexpenseIndex] = newexp.newexp
+                }
+
+                sessionStorage.setItem(`homeexpenses-${newexp.newexp.home}`, JSON.stringify(homeExpenses));
+                sessionStorage.setItem('userexpenses', JSON.stringify(userExpenses));
+                setalertSeverity('success')
+
+                return
+            }
+
+        } catch (error) {
+            console.error(error)
+
+            setshowAlert(true)
+            setalertSeverity('warning')
+
+
+            setTimeout(() => {
+                setshowAlert(false)
+            }, 2500);
+
+        }
     };
 
 
@@ -141,6 +191,28 @@ const ExpenseDialog = ({ expense, setOpen }) => {
 
     //     setSocket(socket)
     // }, [socket])
+
+    useEffect(() => {
+        import('pusher-js').then((Pusher) => {
+            Pusher.logToConsole = true;
+            const pusher = new Pusher.default('f594af9f3392d531de1f', {
+                cluster: 'ap2'
+            });
+
+            setPusher(pusher);
+
+            // will join th echannel on oading thebox
+            const channel = pusher.subscribe('comment');
+
+            // will listen for the get comments after joining
+            channel.bind('get-comment', function (data) {
+                console.log('pusher res', data)
+                console.log("🚀 ~ file: ExpenseDialog.js:99 ~ data:", data)
+    
+            });
+    
+        })
+    }, [])
 
 
     return (

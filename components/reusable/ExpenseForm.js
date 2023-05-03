@@ -70,6 +70,8 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
 
     console.log('to add ex[ense', expense)
 
+    /*
+
     socket.emit('addexpense', expense, homeid);
 
     socket.on('addedexpense', (data) => {
@@ -93,32 +95,58 @@ const ExpenseForm = ({ setcurrentExpenses, setuserExpenses, socket, handleCloseD
       setShare('');
     })
 
-    // try {
-    //   const response = await fetch(BACKEND + '/addexpense', {
-    //     method: 'POST',
-    //     headers: { 'Content-Type': 'application/json' },
-    //     body: JSON.stringify(expense),
-    //   });
+    */
 
-    //   const data = await response.json();
+    try {
+      const response = await fetch(BACKEND + '/addexpense', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(expense),
+      });
 
-    //   if (data.status === 201) {
-    //     console.log(data);
-    //   }
-    // } catch (error) {
-    //   console.error(error);
-    // }
+      const data = await response.json();
+      setshowAlert(true)
+      setalertMessage(data.message)
+      console.log("🚀 ~ file: ExpenseForm.js:108 ~ handleSubmit ~ data:", data)
 
-    // submit the form
-    // onSubmit(expense);
 
-    // reset form inputs
-    // setItem('');
-    // setPrice('');
-    // setDescription('');
-    // setCategory('misc');
-    // setSharedBy('');
-    // setShare('');
+      if (data.status === 201) {
+
+        setshowProgress(false)
+        console.log('new expense from backend', data)
+        sessionStorage.setItem(`homeexpenses-${data.homeid}`, JSON.stringify(data.home));
+        sessionStorage.setItem('userexpenses', JSON.stringify(data.user));
+        setcurrentExpenses(data.home)
+        setuserExpenses(data.user)
+
+        setalertSeverity('success')
+
+        // reset form inputs
+        setItem('');
+        setPrice('');
+        setDescription('');
+        setCategory('misc');
+        setSharedBy('');
+        setShare('');
+
+
+      } else {
+        setalertSeverity('warning')
+      }
+
+      setTimeout(() => {
+        setshowAlert(false)
+      }, 2500);
+
+    } catch (error) {
+      console.error(error);
+      return router.push({
+        pathname: '/error',
+      }, '/dashboard', // "as" argument
+      )
+    }
+
+
   };
 
 

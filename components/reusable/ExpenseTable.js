@@ -60,8 +60,7 @@ function ExpenseTable({ userexpenses,head }) {
                                         onClick={() => {
                                             setcurrentExpense(expense)
                                             setOpen(true)
-                                        }}
-                                    >
+                                        }}>
                                         <i className="fas fa-info-circle ">i</i>
                                     </button>
                                 </td>

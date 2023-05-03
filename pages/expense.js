@@ -35,10 +35,10 @@ function Expense() {
     const [homeid, sethomeId] = useState(Cookies.get('homeid'))
 
     // socket
-    const socket = io(BACKEND)
+    // const socket = io(BACKEND)
 
     // to join the current room
-    socket.emit('join-expense', homeid);
+    // socket.emit('join-expense', homeid);
 
 
 
@@ -202,11 +202,11 @@ function Expense() {
                             onOpen={toggleexpenseDrawer(true)}
                             className="block md:hidden">
                             {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
-                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                            {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} homes={userProfile.homes} sethomeId={sethomeId} />}
                         </SwipeableDrawer>
                     </div>
                     <div className={`w-full h-full ${theme.boxbg}`}>
-                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} socket={socket} homes={userProfile.homes} sethomeId={sethomeId} />}
+                        {userProfile && <Sidebar4expenses setcurrentExpenses={setcurrentExpenses} setuserExpenses={setuserExpenses} homes={userProfile.homes} sethomeId={sethomeId} />}
                         {/* {userProfile && <Sidebar userProfile={userProfile} showSidebar={showSidebar} showprofile={false} />} */}
                     </div>
                 </div>
