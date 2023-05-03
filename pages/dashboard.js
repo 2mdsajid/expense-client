@@ -159,7 +159,7 @@ function Dashboard() {
 
             const data = await res.json();
             setUserProfile(data.user);
-            // console.log('userprofile loaded..........', data.user)
+            console.log('userprofile loaded..........', data)
             sessionStorage.setItem('userprofile', JSON.stringify(data.user));
 
             if (data.user.homes.length > 0) {
@@ -178,12 +178,15 @@ function Dashboard() {
     // getting the userId from the req.query
     useEffect(() => {
         const { userId } = router.query;
+        console.log("🚀 ~ file: dashboard.js:181 ~ useEffect ~ userId:", userId)
         if (userId) {
             setUserId(userId);
         } else {
             const loginToken = Cookies.get('logintoken');
+            console.log("🚀 ~ file: dashboard.js:186 ~ useEffect ~ loginToken:", loginToken)
             if (loginToken) {
                 const userId = Cookies.get('userId');
+                console.log("🚀 ~ file: dashboard.js:189 ~ useEffect ~ userId:", userId)
                 if (userId) {
                     setUserId(userId);
                 }
@@ -203,18 +206,22 @@ function Dashboard() {
     useEffect(() => {
         if (userId) {
             const userprofile = sessionStorage.getItem('userprofile');
+            console.log("🚀 ~ file: dashboard.js:206 ~ useEffect ~ userprofile:", userprofile)
             if (userprofile && userprofile._id === userId && userprofile !== 'undefined') {
                 // console.log('from local storage', userprofile);
                 setUserProfile(JSON.parse(userprofile))
+                console.log("🚀 ~ file: dashboard.js:210 ~ useEffect ~ userprofile:", userprofile)
             } else {
                 fetchUserProfile(userId);
             }
+                console.log("🚀 ~ file: dashboard.js:214 ~ useEffect ~ userId:", userId)
 
             if (Cookies.get('homeid')) {
                 fetchhomeExpenses(Cookies.get('homeid'))
             }
 
             const cachedExpenses = sessionStorage.getItem('userexpenses')
+            console.log("🚀 ~ file: dashboard.js:221 ~ useEffect ~ cachedExpenses:", cachedExpenses)
             if (cachedExpenses && cachedExpenses !== 'undefined') {
                 setuserExpenses(JSON.parse(cachedExpenses));
                 // console.log('expenses in session storage', cachedExpenses)
