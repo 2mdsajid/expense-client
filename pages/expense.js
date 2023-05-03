@@ -107,8 +107,10 @@ function Expense() {
     useEffect(() => {
         const logintoken = Cookies.get('logintoken');
         if (logintoken) {
-            const userProfile = JSON.parse(sessionStorage.getItem('userprofile'));
-            setUserProfile(userProfile)
+            const userProfile = sessionStorage.getItem('userprofile')
+            if(userProfile!=='undefined'){
+                setUserProfile(JSON.parse(userProfile))
+            }
 
             // console.log('prof in exp from local storage', userProfile)
         } else {

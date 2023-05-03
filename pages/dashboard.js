@@ -162,7 +162,7 @@ function Dashboard() {
             // console.log('userprofile loaded..........', data.user)
             sessionStorage.setItem('userprofile', JSON.stringify(data.user));
 
-            if(data.user.homes.length>0){
+            if (data.user.homes.length > 0) {
                 Cookies.set('homeid', data.user.homes[0]._id)
                 sethomeId(data.user.homes[0]._id)
                 console.log('homeid', data.user.homes[0]._id)
@@ -215,7 +215,7 @@ function Dashboard() {
             }
 
             const cachedExpenses = sessionStorage.getItem('userexpenses')
-            if (cachedExpenses && cachedExpenses!=='undefined') {
+            if (cachedExpenses && cachedExpenses !== 'undefined') {
                 setuserExpenses(JSON.parse(cachedExpenses));
                 // console.log('expenses in session storage', cachedExpenses)
             } else {
@@ -265,7 +265,7 @@ function Dashboard() {
                 </div>
 
                 {/* REMAINING COMPONENT */}
-                {userexpenses.length>0 ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
+                {userexpenses.length > 0 ? <div className='w-[90%] md:w-[45%] xl:w-[55%] mx-auto'>
                     {/* Recent expenses section */}
 
                     <div>
@@ -293,8 +293,14 @@ function Dashboard() {
                     </div>
 
                 </div> : <div className='w-[80%] md:w-[40%] xl:w-[50%] mx-auto'>
-                    <p className='p-1 text-center font-semibold text-lg '>{(userProfile.homes && userProfile.homes.length) > 0  ? 'Please add expenses! you do nat have any expenses to show' : 'Please add a new home from profile section to start adding your expenses !'}</p>
-                </div>}
+                    <p className='p-1 text-center font-semibold text-lg '>
+                        {userProfile && userProfile.homes && userProfile.homes.length > 0 ?
+                            'Please add expenses! you do not have any expenses to show' :
+                            'Please add a new home from profile section to start adding your expenses!'
+                        }
+                    </p>
+                </div>
+                }
 
                 {/* SIDE BAR FOR HOMES */}
                 <div className={`hidden mb-10 md:block  md:w-[25%] xl:w-[20%]  ${theme.boxbg} ${theme.primaryTextColor} h-[90vh] rounded-lg shadow-lg mx-auto overflow-y-auto`}>
